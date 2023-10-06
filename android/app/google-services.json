@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "102704479716",
+    "project_id": "fir-app-99adb",
+    "storage_bucket": "fir-app-99adb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:102704479716:android:80ee64ad3642a82da0dbf1",
+        "android_client_info": {
+          "package_name": "com.example.bankapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "102704479716-7eduj63vnhfoi3quh0adgilfgm2jrd10.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdbO2fKgEkwxHaNV4FUr7vQ_H5ZTjfuxw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "102704479716-7eduj63vnhfoi3quh0adgilfgm2jrd10.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:102704479716:android:0289221a6b0630d2a0dbf1",
+        "android_client_info": {
+          "package_name": "com.example.chatappfirebaseflutterbloc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "102704479716-7eduj63vnhfoi3quh0adgilfgm2jrd10.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdbO2fKgEkwxHaNV4FUr7vQ_H5ZTjfuxw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "102704479716-7eduj63vnhfoi3quh0adgilfgm2jrd10.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
