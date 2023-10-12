@@ -1,94 +1,477 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 
-class CurrencyConverter extends StatefulWidget {
-  const CurrencyConverter({Key? key}) : super(key: key);
+class FromAccountToAccountScreen extends StatefulWidget {
+  final String imagePath;
+  final String accountTitle;
+
+  const FromAccountToAccountScreen({
+    Key? key,
+    required this.imagePath,
+    required this.accountTitle,
+  });
 
   @override
-  _CurrencyConverterState createState() => _CurrencyConverterState();
+  State<FromAccountToAccountScreen> createState() =>
+      _FromAccountToAccountScreenState();
 }
 
-class _CurrencyConverterState extends State<CurrencyConverter> {
-  String selectedCurrency = 'USD'; // Default selected currency
-  TextEditingController nameController = TextEditingController(); // Controller for the name TextField
-  TextEditingController balanceController = TextEditingController(); // Controller for the balance TextField
+class _FromAccountToAccountScreenState
+    extends State<FromAccountToAccountScreen> {
+  String? selectedOption = 'Others';
 
-  // Fetched user data
-  String userName = ''; // Store user's name
-  double userBalance = 0.0; // Store user's balance
+  List<String> options = [
+    'Card Bill Payment',
+    'Donation Or Charity',
+    'Rental Payment',
+    'Hotel Payment',
+    'School and University Fee Payment',
+    'Supplier and Distributor Payment'
+  ];
 
-  // Define conversion rates for each currency
-  final Map<String, double> conversionRates = {
-    'USD': 1.0,
-    'EUR': 0.85,
-    'GBP': 0.75,
-    'JPY': 110.0,
-    'CAD': 1.25,
-    'AUD': 1.3,
-  };
-
-  // Fetch user data from Firestore
-  void fetchUserData() async {
-    // Replace 'users' with your Firestore collection name
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc('user_id').get();
-
-    if (userDoc.exists) {
-      setState(() {
-
-        userName = userDoc['name'];
-        userBalance = userDoc['balance'];
-        nameController.text = userName;
-        balanceController.text = userBalance.toString();
-      });
-    }
-  }
+  String userName = ''; // To store the user's name
+  String accountNumber = ''; // To store the user's account number
+  double balance = 0.0; // To store the user's balance as a double
+  TextEditingController amountController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    fetchUserData(); // Fetch user data when the widget initializes
+    selectedOption = 'Others';
+    fetchUserDetails(); // Fetch user details when the screen is initialized
+  }
+
+  // Fetch user details based on the accountTitle
+  void fetchUserDetails() async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('users') // Replace with your users collection name
+          .where('name', isEqualTo: widget.accountTitle)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final user = querySnapshot.docs.first;
+        setState(() {
+          userName = user['name'];
+          accountNumber = user['accountNumber'];
+          // Assuming you have a 'balance' field in your user document
+          balance = (user['balance'] ?? 0.0).toDouble();
+        });
+      }
+    } catch (e) {
+      print('Error fetching user details: $e');
+    }
+  }
+
+  void _showOptionsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Container(
+            width: 200,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: options.map((option) {
+                return ListTile(
+                  title: Center(child: Text(option)),
+                  onTap: () {
+                    setState(() {
+                      selectedOption = option;
+                    });
+                    Navigator.pop(context); // Close the dialog
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void deductAmountFromBalance(double amount) {
+    setState(() {
+      balance -= amount;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Flexible(
-              flex: 3,
-              child: Column(
-                children: [
-                  SizedBox(height: 20,),
-                  DropdownButton<String>(
-                    value: selectedCurrency,
-                    onChanged: (newValue) {
-                      setState(() {
-                        selectedCurrency = newValue!;
-                      });
-                    },
-                    items: conversionRates.keys.map((String currency) {
-                      return DropdownMenuItem<String>(
-                        value: currency,
-                        child: Text(currency),
-                      );
-                    }).toList(),
-                  ),
-                ],
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                height: 65,
+                color: Colors.purple,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            // Add navigation logic here
+                          },
+                          icon: Icon(
+                            Icons.arrow_back_ios_new,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          'Send Money',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            // Add navigation logic here
+                          },
+                          icon: Icon(
+                            Icons.home_outlined,
+                            color: Colors.orange,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            // Add notification logic here
+                          },
+                          icon: Icon(
+                            Icons.notifications,
+                            color: Colors.orange,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            // Add power settings logic here
+                          },
+                          icon: Icon(
+                            Icons.power_settings_new,
+                            color: Colors.orange,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              Padding(
+                padding:
+                const EdgeInsets.symmetric(horizontal: 15, vertical: 17),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'From Account',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.orange,
+                        fontSize: 20,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: 20),
+                      height: 70,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(7),
+                      ),
+                      child: Row(
+                        children: [
+                          Image.network(
+                            'https://ebanking.meezanbank.com/AmbitRetailFrontEnd/images/new-login-logo.png',
+                            scale: 3.5,
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                userName,
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 19),
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    accountNumber,
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 19),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'To Account',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.orange,
+                        fontSize: 20,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: 20),
+                      height: 70,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(7),
+                      ),
+                      child: Row(
+                        children: [
+                          Image.network(
+                            widget.imagePath,
+                            height: 40,
+                            width: 40,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            widget.accountTitle,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 19,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 17,
+                    ),
+                    TextField(
+                      controller: amountController,
+                      style: TextStyle(color: Colors.white),
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: 'Amount',
+                        helperText:
+                        "Enter an amount between Rs.1 and\n Rs.1,000,000.",
+                        helperStyle: TextStyle(
+                          fontSize: 17,
+                          color: Colors.orange,
+                        ),
+                        hintStyle: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.white,
+                          ),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'Purpose of Payment',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.orange,
+                        fontSize: 20,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        _showOptionsDialog(context);
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            DropdownButtonFormField<String>(
+                              isExpanded: true,
+                              decoration: InputDecoration(
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                hintStyle: TextStyle(
+                                  color: Colors.transparent,
+                                ),
+                              ),
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                              value: selectedOption,
+                              items: [
+                                DropdownMenuItem<String>(
+                                  value: 'Others',
+                                  child: Center(
+                                    child: Text(
+                                      'Others',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                ...options.map((String option) {
+                                  return DropdownMenuItem<String>(
+                                    value: option,
+                                    child: Center(
+                                      child: Text(
+                                        option,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ],
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedOption = newValue!;
+                                });
+                              },
+                            ),
+                            Text(
+                              selectedOption ?? 'Others',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 120,
+              ),
+              Container(
+                height: 58,
+                width: MediaQuery.of(context).size.width,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                  ),
+                  onPressed: () {
+                    // Add your logic for the "Next" button here
+                    String amountText = amountController.text;
+                    if (amountText.isNotEmpty) {
+                      double amount = double.parse(amountText);
+                      if (amount > 0 && amount <= 1000000) {
+                        // Deduct the entered amount from the balance
+                        deductAmountFromBalance(amount);
+                        // Now you can use 'amount' for further processing
+                        // Update the balance in Firestore here
+                        updateBalanceInFirestore(balance);
+                      } else {
+                        // Handle invalid amount
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Invalid Amount'),
+                              content: Text(
+                                  'Please enter an amount between Rs.1 and Rs.1,000,000.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    }
+                  },
+                  child: Text(
+                    'Next',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
-        SizedBox(height: 15,),
-        TextField(
-          controller: nameController, // Set the controller for the name TextField
-          decoration: InputDecoration(labelText: 'Name'), // Your other properties for this TextField
-        ),
-        TextField(
-          controller: balanceController, // Set the controller for the balance TextField
-          decoration: InputDecoration(labelText: 'Balance'), // Your other properties for this TextField
-        ),
-      ],
+      ),
     );
   }
+
+  void updateBalanceInFirestore(double newBalance) {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser != null) {
+      // Update the balance in Firestore for the current user
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .update({'balance': newBalance});
+    }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    amountController.dispose();
+    super.dispose();
+  }
+
 }
+
+

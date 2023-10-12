@@ -8,11 +8,13 @@ class AddBeneficiaryAccountNumberScreen extends StatefulWidget {
   final String bankName;
   final String imageUrl;
 
+
   AddBeneficiaryAccountNumberScreen({
     required this.bankName,
     required this.imageUrl,
-  });
 
+
+  });
   @override
   State<AddBeneficiaryAccountNumberScreen> createState() =>
       _AddBeneficiaryAccountNumberScreenState();
@@ -29,11 +31,11 @@ class _AddBeneficiaryAccountNumberScreenState
       CollectionReference users = firestore.collection('users');
 
       QuerySnapshot querySnapshot =
-          await users.where('accountNumber', isEqualTo: accountNumber).get();
+      await users.where('accountNumber', isEqualTo: accountNumber).get();
 
       if (querySnapshot.docs.isNotEmpty) {
         String username = querySnapshot.docs[0][
-            'name'];
+        'name'];
 
         // Now, navigate to the next screen and pass the username
         Navigator.of(context).pushReplacement(
@@ -41,7 +43,11 @@ class _AddBeneficiaryAccountNumberScreenState
             builder: (context) => AddBeneficiaryDetailsScreen(
               bankName: widget.bankName,
               imageUrl: widget.imageUrl,
-              username: username, // Pass the fetched username
+              username: username,
+              accountNumber: accountNumber,
+
+
+              // Pass the fetched username
             ),
           ),
         );
@@ -111,7 +117,7 @@ class _AddBeneficiaryAccountNumberScreenState
               ),
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -165,7 +171,7 @@ class _AddBeneficiaryAccountNumberScreenState
               ),
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                 child: Column(
                   children: [
                     TextField(
@@ -174,7 +180,7 @@ class _AddBeneficiaryAccountNumberScreenState
                       decoration: InputDecoration(
                         hintText: 'Account Number/IBAN',
                         helperText:
-                            "PLEASE ENTER MEEZAN BANK 13/14\nDIGIT ACCOUNT NUMBER",
+                        "PLEASE ENTER MEEZAN BANK 13/14\nDIGIT ACCOUNT NUMBER",
                         helperStyle: TextStyle(
                           fontSize: 15,
                           color: Colors.orange,

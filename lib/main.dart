@@ -38,12 +38,7 @@ void main() async {
           '/': (context) => SignInScreen(),
           '/signup': (context) => SignUpScreen(),
           '/forgot_password': (context) => ForgotPasswordScreen(),
-          '/home': (context) => HomeScreen(),
-          '/transfer': (context) => TransferScreen(),
-          '/fromaccounttoaccount': (context) => FromAccountToAccountScreen(),
 
-          '/bank': (context) => BankScreen(),
-          '/transfer': (context) => TransferScreen(),
 
 
 

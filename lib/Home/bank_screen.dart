@@ -1,11 +1,13 @@
+import 'package:bankapp/Home/addbenficiaryaccountnumber.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'addbenficiaryaccountnumber.dart';
-
 class BankScreen extends StatefulWidget {
+
+
+
   @override
-  State<BankScreen> createState() => _BankScreenState();
+  _BankScreenState createState() => _BankScreenState();
 }
 
 class _BankScreenState extends State<BankScreen> {
@@ -106,96 +108,73 @@ class _BankScreenState extends State<BankScreen> {
             SizedBox(
               height: 20,
             ),
-            Expanded(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: ListView.builder(
-                scrollDirection: Axis.vertical,
                 shrinkWrap: true,
                 itemCount: banks.length,
                 itemBuilder: (context, index) {
                   final bank = banks[index];
-                  return BeneficiaryItem(
-                    bankName: bank.name,
-                    imageUrl: bank.image,
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+                  return GestureDetector(
+                    onTap: () {
+                      // Handle the tap event for the bank item
 
-class BeneficiaryItem extends StatelessWidget {
-  final String bankName;
-  final String imageUrl;
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>AddBeneficiaryAccountNumberScreen(
+                          bankName:bank.name,
+                          imageUrl: bank.image,
 
-  const BeneficiaryItem({
-    Key? key,
-    required this.bankName,
-    required this.imageUrl,
-  }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 12),
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddBeneficiaryAccountNumberScreen(
-                bankName: bankName,
-                imageUrl: imageUrl,
-              ),
-            ),
-          );
-        },
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Flexible(
-                  flex: 1,
-                  child: Container(
-                    child: Image.network(
-                      imageUrl,
-                      width: 60,
-                      height: 60,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 20),
-                Flexible(
-                  flex: 7,
-                  child: Container(
+                      )));
+                    },
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            Text(
-                              bankName,
-                              style: TextStyle(
-                                color: Colors.orange,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
+                            Flexible(
+                              flex: 1,
+                              child: Container(
+                                child: Image.network(
+                                  bank.image, // Use bank's image URL
+                                  width: 60,
+                                  height: 60,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Flexible(
+                              flex: 7,
+                              child: Container(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          bank.name, // Use bank's name
+                                          style: TextStyle(
+                                            color: Colors.orange,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
                         ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 65),
+                          child: Divider(
+                            color: Colors.grey,
+                          ),
+                        ),
                       ],
                     ),
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 65),
-              child: Divider(
-                color: Colors.grey,
+                  );
+                },
               ),
             ),
           ],

@@ -1,18 +1,83 @@
 import 'package:bankapp/Home/currency_converter.dart';
 import 'package:bankapp/Home/transfer_screen.dart';
+import 'package:bankapp/utils/common.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
-
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String selectedCurrency = 'PKR';
 
+  String userName = '';
+  Map<String, dynamic> userBalances = {};
+
+  void updateUserBalance(double newBalance) {
+    setState(() {
+      Common.balance = newBalance.toInt();
+      userBalances[selectedCurrency] = newBalance;
+    });
+  }
+
+  Future<void> fetchUserBalance() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection("users")
+            .doc(currentUser.uid)
+            .get();
+        if (userDoc.exists) {
+          var balancePKR = userDoc['balancePKR'];
+          var balanceUSD = userDoc['balanceUSD'];
+          var balanceCAD = userDoc['balanceCAD'];
+
+          Map<String, dynamic> balances = {};
+          balances["PKR"] = balancePKR;
+          balances["USD"] = balanceUSD;
+          balances["CAD"] = balanceCAD;
+
+            setState(() {
+              userBalances = balances;
+            });
+
+        }
+      }
+    } catch (e) {
+      print("Error fetching user balance: $e");
+    }
+  }
+
+  Future<void> fetchUserData() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        final userDoc = await FirebaseFirestore.instance
+            .collection("users")
+            .doc(currentUser.uid)
+            .get();
+
+        if (userDoc.exists) {
+          setState(() {
+            userName = userDoc['name'];
+          });
+        }
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+    fetchUserBalance();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +98,69 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(
               height: 30,
             ),
-            CurrencyConverter(),
-
+            Card(
+              elevation: 8,
+              child: Container(
+                padding: EdgeInsets.all(10),
+                height: 120,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${userBalances[selectedCurrency]?.toStringAsFixed(2) ?? "0.00"} $selectedCurrency',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Flexible(
+                          child: Column(
+                            children: [
+                              DropdownButton<String>(
+                                value: selectedCurrency,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    selectedCurrency = newValue!;
+                                    Common.currency = selectedCurrency;
+                                    Common.balance =
+                                        userBalances[selectedCurrency];
+                                  });
+                                },
+                                items: ['PKR', 'USD', 'CAD']
+                                    .map((String currency) {
+                                  return DropdownMenuItem<String>(
+                                    value: currency,
+                                    child: Text(currency),
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          '$userName',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
             SizedBox(
               height: 20,
             ),
@@ -43,7 +169,12 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 45,
               child: ElevatedButton(
                 onPressed: () {
-                   Navigator.push(context, MaterialPageRoute(builder: (context)=>TransferScreen()));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TransferScreen(),
+                    ),
+                  );
                 },
                 child: Text('Transfer'),
               ),
@@ -80,6 +211,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-
-// Define CharitiesScreen similarly to StatementScreen

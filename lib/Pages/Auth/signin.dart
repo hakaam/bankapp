@@ -1,3 +1,4 @@
+import 'package:bankapp/Home/home_screen.dart';
 import 'package:bankapp/OTP/screens/phone_number/phone_number_form.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,7 @@ class SignInScreen extends StatelessWidget {
         password: passwordController.text,
       );
       // Navigate to the home screen after successful signin
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
     } catch (e) {
       // Handle signin errors, show error message
       showDialog(

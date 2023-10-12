@@ -1,6 +1,26 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/common.dart';
+import 'fromtotransferpaydetails.dart';
+
 class FromAccountToAccountScreen extends StatefulWidget {
+  final String imagePath;
+  final String accountTitle;
+  final String nickName;
+  final String bankName;
+  final String receiverAccountNumber;
+
+  const FromAccountToAccountScreen({
+    Key? key,
+    required this.imagePath,
+    required this.accountTitle,
+    required this.nickName,
+    required this.bankName,
+    required this.receiverAccountNumber,
+  });
+
   @override
   State<FromAccountToAccountScreen> createState() =>
       _FromAccountToAccountScreenState();
@@ -8,8 +28,7 @@ class FromAccountToAccountScreen extends StatefulWidget {
 
 class _FromAccountToAccountScreenState
     extends State<FromAccountToAccountScreen> {
-  String? selectedOption = 'Others'; // Initialize selectedOption with 'Others'
-
+  String? selectedOption = 'Others';
   List<String> options = [
     'Card Bill Payment',
     'Donation Or Charity',
@@ -18,12 +37,40 @@ class _FromAccountToAccountScreenState
     'School and University Fee Payment',
     'Supplier and Distributor Payment'
   ];
+  TextEditingController amountController = TextEditingController();
 
-  // Your list of options
+  String selectedCurrency = Common.currency;
+  double userBalance = Common.balance.toDouble();
+  String userName = ''; // To store the user's name
+  String accountNumber = ''; // To store the user's account number
+
   @override
   void initState() {
     super.initState();
-    selectedOption = 'Others'; // Set 'Others' as the default value
+    selectedOption = 'Others';
+    fetchCurrentUserDetails();
+  }
+
+  void fetchCurrentUserDetails() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        final uid = user.uid;
+
+        final userData =
+            await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+        if (userData.exists) {
+          setState(() {
+            userName = userData['name'];
+            accountNumber = userData['accountNumber'];
+          });
+        }
+      }
+    } catch (e) {
+      print('Error fetching user details: $e');
+    }
   }
 
   void _showOptionsDialog(BuildContext context) {
@@ -42,7 +89,7 @@ class _FromAccountToAccountScreenState
                     setState(() {
                       selectedOption = option;
                     });
-                    Navigator.pop(context); // Close the dialog
+                    Navigator.pop(context);
                   },
                 );
               }).toList(),
@@ -51,6 +98,12 @@ class _FromAccountToAccountScreenState
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    amountController.dispose();
+    super.dispose();
   }
 
   @override
@@ -97,7 +150,10 @@ class _FromAccountToAccountScreenState
                         ),
                         IconButton(
                           onPressed: () {},
-                          icon: Icon(Icons.notifications, color: Colors.orange),
+                          icon: Icon(
+                            Icons.notifications,
+                            color: Colors.orange,
+                          ),
                         ),
                         IconButton(
                           onPressed: () {},
@@ -112,7 +168,8 @@ class _FromAccountToAccountScreenState
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 17),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 17),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -149,9 +206,11 @@ class _FromAccountToAccountScreenState
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Usman',
-                                style:
-                                    TextStyle(color: Colors.black, fontSize: 19),
+                                userName,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 19,
+                                ),
                               ),
                               SizedBox(
                                 height: 4,
@@ -159,26 +218,12 @@ class _FromAccountToAccountScreenState
                               Row(
                                 children: [
                                   Text(
-                                    '00022236543289',
+                                    accountNumber,
                                     style: TextStyle(
-                                        color: Colors.black, fontSize: 19),
+                                      color: Colors.black,
+                                      fontSize: 19,
+                                    ),
                                   ),
-                                  SizedBox(
-                                    width: 3,
-                                  ),
-                                  Text(
-                                    '-',
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 20),
-                                  ),
-                                  SizedBox(
-                                    width: 3,
-                                  ),
-                                  Text(
-                                    'College...',
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 19),
-                                  )
                                 ],
                               )
                             ],
@@ -186,7 +231,6 @@ class _FromAccountToAccountScreenState
                         ],
                       ),
                     ),
-
                     SizedBox(
                       height: 10,
                     ),
@@ -214,8 +258,8 @@ class _FromAccountToAccountScreenState
                       ),
                       child: Row(
                         children: [
-                          Image.asset(
-                            'images/silkk.PNG',
+                          Image.network(
+                            widget.imagePath,
                             height: 40,
                             width: 40,
                           ),
@@ -223,7 +267,7 @@ class _FromAccountToAccountScreenState
                             width: 10,
                           ),
                           Text(
-                            'Usman',
+                            widget.accountTitle,
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 19,
@@ -235,19 +279,9 @@ class _FromAccountToAccountScreenState
                     SizedBox(
                       height: 17,
                     ),
-                    Text(
-                      'Available balance RS.199',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.green,
-                        fontSize: 16,
-                      ),
-                    ),
-                    // SizedBox(
-                    //   height: 20,
-                    // ),
                     TextField(
-                      style: TextStyle(color: Colors.white), // Text color
+                      style: TextStyle(color: Colors.white),
+                      controller: amountController,
                       decoration: InputDecoration(
                         hintText: 'Amount',
                         helperText:
@@ -262,14 +296,12 @@ class _FromAccountToAccountScreenState
                         ),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: Colors
-                                .white, // Change this color to your desired underline color
+                            color: Colors.white,
                           ),
                         ),
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: Colors
-                                .white, // Change this color to your desired underline color
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -278,7 +310,7 @@ class _FromAccountToAccountScreenState
                       height: 20,
                     ),
                     Text(
-                      'Purpose of Paymentttt',
+                      'Purpose of Payment',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         color: Colors.orange,
@@ -288,53 +320,44 @@ class _FromAccountToAccountScreenState
                     SizedBox(
                       height: 10,
                     ),
-
                     GestureDetector(
                       onTap: () {
                         _showOptionsDialog(context);
                       },
                       child: Container(
-                        alignment: Alignment
-                            .center, // Center the DropdownButtonFormField
+                        alignment: Alignment.center,
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
                             DropdownButtonFormField<String>(
-                              isExpanded:
-                                  true, // Make the dropdown list expand to fit content
-
+                              isExpanded: true,
                               decoration: InputDecoration(
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Colors
-                                        .white, // Change this color to your desired underline color
+                                    color: Colors.white,
                                   ),
                                 ),
                                 enabledBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Colors
-                                        .white, // Change this color to your desired underline color
+                                    color: Colors.white,
                                   ),
                                 ),
                                 hintStyle: TextStyle(
-                                  color: Colors
-                                      .transparent, // Make the hint text transparent
+                                  color: Colors.transparent,
                                 ),
                               ),
                               style: TextStyle(
-                                  color: Colors
-                                      .white), // Text color for selected option
+                                color: Colors.white,
+                              ),
                               value: selectedOption,
                               items: [
                                 DropdownMenuItem<String>(
-                                  value: 'Others', // Unique value for the hint
+                                  value: 'Others',
                                   child: Center(
-                                    // Center-align the hint "Others"
                                     child: Text(
                                       'Others',
                                       style: TextStyle(
-                                        color: Colors
-                                            .black, // Text color for "Others" option
+                                        color: Colors.black,
                                       ),
                                     ),
                                   ),
@@ -343,12 +366,10 @@ class _FromAccountToAccountScreenState
                                   return DropdownMenuItem<String>(
                                     value: option,
                                     child: Center(
-                                      // Center-align the dropdown options
                                       child: Text(
                                         option,
                                         style: TextStyle(
-                                          color: Colors
-                                              .black, // Text color for dropdown options
+                                          color: Colors.black,
                                         ),
                                       ),
                                     ),
@@ -362,8 +383,7 @@ class _FromAccountToAccountScreenState
                               },
                             ),
                             Text(
-                              selectedOption ??
-                                  'Others', // Show selected option or "Others" if no option is selected
+                              selectedOption ?? 'Others',
                               style: TextStyle(
                                 color: Colors.white,
                               ),
@@ -383,15 +403,59 @@ class _FromAccountToAccountScreenState
                 width: MediaQuery.of(context).size.width,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
+                    primary: Colors.orange,
                   ),
                   onPressed: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => AddBeneficiaryDetailsScreen(),
-                    //   ),
-                    // );
+                    Future<void> handleNextButtonPressed() async {
+                      String amountText = amountController.text;
+                      if (amountText.isNotEmpty) {
+                        double amount = double.tryParse(amountText) ?? 0.0;
+
+                        if (amount > 0 && amount <= userBalance) {
+                          // Calculate the total transferred amount
+                          double totalTransferredAmount = amount;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  FromToTransferPayDetailsScreen(
+                                fromAccountUserName: userName,
+                                accountTitle: widget.accountTitle,
+                                bankName: widget.bankName,
+                                imagePath: widget.imagePath,
+                                accountNumber: accountNumber,
+                                nickName: widget.nickName,
+                                amount: amount.toStringAsFixed(2),
+                                userBalance: userBalance,
+                                receiverAccountNumber:
+                                    widget.receiverAccountNumber,
+                              ),
+                            ),
+                          );
+                        } else {
+                          // Handle insufficient balance
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Insufficient Balance'),
+                                  content: Text(
+                                      'Your balance is not sufficient for this transaction.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              });
+                        }
+                      }
+                    }
+
+                    handleNextButtonPressed();
                   },
                   child: Text(
                     'Next',

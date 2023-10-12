@@ -1,7 +1,32 @@
 import 'package:bankapp/Home/fromaccounttoaccountscreeen.dart';
+import 'package:bankapp/utils/common.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class FromToTransferPayDetailsScreen extends StatefulWidget {
+  final String fromAccountUserName;
+  final String accountTitle;
+  final String bankName;
+  final String imagePath;
+  final String accountNumber;
+  final String receiverAccountNumber;
+  final String nickName;
+  final String amount;
+  final double userBalance;
+
+  FromToTransferPayDetailsScreen({
+    required this.fromAccountUserName,
+    required this.accountTitle,
+    required this.bankName,
+    required this.imagePath,
+    required this.accountNumber,
+    required this.nickName,
+    required this.amount,
+    required this.receiverAccountNumber,
+    required this.userBalance,
+  });
+
   @override
   State<FromToTransferPayDetailsScreen> createState() =>
       _FromToTransferPayDetailsScreenState();
@@ -9,7 +34,88 @@ class FromToTransferPayDetailsScreen extends StatefulWidget {
 
 class _FromToTransferPayDetailsScreenState
     extends State<FromToTransferPayDetailsScreen> {
-  // Define a function to handle the click action
+  late double userBalance;
+
+  @override
+  void initState() {
+    super.initState();
+    userBalance = widget.userBalance;
+  }
+  Future<double> getReceiverBalanceFromFirestore() async {
+    // Replace this with code to fetch the receiver's balance from Firestore
+    try {
+      DocumentSnapshot receiverData = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.receiverAccountNumber)
+          .get();
+
+      if (receiverData.exists) {
+        return receiverData['balance'].toDouble();
+      }
+    } catch (e) {
+      print('Error fetching receiver balance: $e');
+    }
+    return -1; // Return a negative value to indicate an error
+  }
+  void updateReceiverBalanceInFirestore(double newBalance) {
+    // Replace this with code to update the receiver's balance in Firestore
+    try {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.receiverAccountNumber)
+          .update({'balance': newBalance});
+    } catch (e) {
+      print('Error updating receiver balance: $e');
+    }
+  }
+  void deductAmountFromBalance(double amount) {
+    userBalance -= amount;
+    updateBalanceInFirestore(userBalance);
+  }
+
+  void updateBalanceInFirestore(double newBalance) {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser != null) {
+      // Update the balance in Firestore for the current user
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .update({'balancePKR': newBalance});
+    }
+  }
+
+  Future<void> saveTransferDetailsToFirestore(double totalTransferredAmount) async {
+    try {
+      final CollectionReference transfersCollection =
+      FirebaseFirestore.instance.collection('transaction');
+
+      Map<String, dynamic> transferData = {
+        'fromAccountUserName': widget.fromAccountUserName,
+        'accountTitle': widget.accountTitle,
+        'bankName': widget.bankName,
+        'userAccountNumber': widget.accountNumber,
+        'receiverAccountNumber': widget.receiverAccountNumber,
+        'nickName': widget.nickName,
+        'amount': widget.amount,
+        'totalAmount': totalTransferredAmount,
+        'timestamp': FieldValue.serverTimestamp(),
+      };
+
+      await transfersCollection.add(transferData);
+
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Payment Successful'),
+          backgroundColor: Colors.white,
+        ),
+      );
+    } catch (e) {
+      print('Error saving transfer details: $e');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +200,7 @@ class _FromToTransferPayDetailsScreenState
                       child: Row(
                         children: [
                           Image.network(
-                            'https://ebanking.meezanbank.com/AmbitRetailFrontEnd/images/new-login-logo.png',
+                            widget.imagePath,
                             scale: 3.5,
                           ),
                           SizedBox(
@@ -105,7 +211,7 @@ class _FromToTransferPayDetailsScreenState
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Wasif Ibrahim',
+                                widget.fromAccountUserName,
                                 style: TextStyle(
                                     color: Colors.black, fontSize: 17),
                               ),
@@ -113,7 +219,7 @@ class _FromToTransferPayDetailsScreenState
                                 height: 4,
                               ),
                               Text(
-                                '00234456742457 - College Road Lahore',
+                                widget.accountNumber,
                                 style: TextStyle(
                                     color: Colors.black, fontSize: 15),
                               ),
@@ -150,9 +256,28 @@ class _FromToTransferPayDetailsScreenState
                             padding: const EdgeInsets.all(15.0),
                             child: Column(
                               children: [
-                                DetailsRow(
-                                  leftText: 'Account Title',
-                                  rightText: 'Muhammad Nadeem',
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'AccountTitle',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    Text(
+                                      widget.accountTitle,
+                                      style: TextStyle(
+                                        color: Colors
+                                            .white, // Use the specified color for the right text
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 SizedBox(
                                   height: 11,
@@ -163,9 +288,28 @@ class _FromToTransferPayDetailsScreenState
                                 SizedBox(
                                   height: 11,
                                 ),
-                                DetailsRow(
-                                  leftText: 'Bank Name',
-                                  rightText: 'Meezan Bank',
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Bank Name',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    Text(
+                                      widget.bankName,
+                                      style: TextStyle(
+                                        color: Colors
+                                            .white, // Use the specified color for the right text
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 SizedBox(
                                   height: 11,
@@ -176,10 +320,30 @@ class _FromToTransferPayDetailsScreenState
                                 SizedBox(
                                   height: 11,
                                 ),
-                                DetailsRow(
-                                  leftText: 'Nick',
-                                  rightText: 'Hamza Yaseen',
-                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Nick',
+                                      style: TextStyle(
+                                        color: Colors
+                                            .white, // Use the specified color for the left text
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    Text(
+                                      widget.nickName,
+                                      style: TextStyle(
+                                        color: Colors
+                                            .white, // Use the specified color for the right text
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
+                                )
                               ],
                             ),
                           ),
@@ -209,11 +373,29 @@ class _FromToTransferPayDetailsScreenState
                             padding: const EdgeInsets.all(15.0),
                             child: Column(
                               children: [
-                                DetailsRow(
-                                  leftText: 'Amount',
-                                  rightText: 'Rs.50',
-                                  rightTextColor: Colors
-                                      .white, // Set the color for the right text
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Amount',
+                                      style: TextStyle(
+                                        color: Colors
+                                            .white, // Use the specified color for the left text
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    Text(
+                                      widget.amount,
+                                      style: TextStyle(
+                                        color: Colors
+                                            .white, // Use the specified color for the right text
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 SizedBox(
                                   height: 11,
@@ -224,11 +406,29 @@ class _FromToTransferPayDetailsScreenState
                                 SizedBox(
                                   height: 11,
                                 ),
-                                DetailsRow(
-                                  leftText: 'Bank Charges',
-                                  rightText: 'Rs.0.00',
-                                  rightTextColor: Colors
-                                      .redAccent, // Set the color for the right text
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Bank Charges',
+                                      style: TextStyle(
+                                        color: Colors
+                                            .white, // Use the specified color for the left text
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Rs.0.00',
+                                      style: TextStyle(
+                                        color: Colors
+                                            .redAccent, // Use the specified color for the right text
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 SizedBox(
                                   height: 11,
@@ -239,12 +439,30 @@ class _FromToTransferPayDetailsScreenState
                                 SizedBox(
                                   height: 11,
                                 ),
-                                DetailsRow(
-                                  leftText: 'Total Amount',
-                                  rightText: 'Rs.50.00',
-                                  rightTextColor: Colors
-                                      .white, // Set the color for the right text
-                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Total Amount',
+                                      style: TextStyle(
+                                        color: Colors
+                                            .white, // Use the specified color for the left text
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    Text(
+                                      widget.amount,
+                                      style: TextStyle(
+                                        color: Colors
+                                            .white, // Use the specified color for the right text
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
+                                )
                               ],
                             ),
                           ),
@@ -279,24 +497,55 @@ class _FromToTransferPayDetailsScreenState
                       height: 58,
                       width: MediaQuery.of(context).size.width,
                       child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.orange),
-                          onPressed: () {
-                            showDialog<String>(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                        ),
+                        onPressed: () async {
+                          double amountToTransfer = double.parse(widget.amount);
+
+                          if (amountToTransfer > 0 && amountToTransfer <= widget.userBalance) {
+
+                            deductAmountFromBalance(amountToTransfer);
+                            saveTransferDetailsToFirestore(amountToTransfer);
+                            // Deduct the entered amount from the sender's balance
+                            deductAmountFromBalance(amountToTransfer);
+
+                            // Add the transfer amount to the receiver's balance
+                            double receiverBalance = await getReceiverBalanceFromFirestore();
+
+                            // receiverBalance += amount;
+                            updateReceiverBalanceInFirestore(receiverBalance);
+                          } else {
+                            showDialog(
                               context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: const Text('Pay Successfully'),
-                                backgroundColor: Colors.white,
-                              ),
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Insufficient Balance'),
+                                  content: Text(
+                                    'Your balance is not sufficient for this transaction.',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
                             );
-                          },
-                          child: Text(
-                            'Pay Now',
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          )),
+                          }
+                        },
+                        child: Text(
+                          'Pay Now',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -305,46 +554,6 @@ class _FromToTransferPayDetailsScreenState
           ),
         ),
       ),
-    );
-  }
-}
-
-class DetailsRow extends StatelessWidget {
-  final String leftText;
-  final String rightText;
-  final Color leftTextColor; // Color for the left text
-  final Color rightTextColor; // Color for the right text
-
-  const DetailsRow({
-    Key? key,
-    required this.leftText,
-    required this.rightText,
-    this.leftTextColor = Colors.white, // Default color is white
-    this.rightTextColor = Colors.white, // Default color is white
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          leftText,
-          style: TextStyle(
-            color: leftTextColor, // Use the specified color for the left text
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-          ),
-        ),
-        Text(
-          rightText,
-          style: TextStyle(
-            color: rightTextColor, // Use the specified color for the right text
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-          ),
-        ),
-      ],
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:bankapp/Home/fromaccounttoaccountscreeen.dart';
 import 'package:bankapp/Home/fromtotransferpaydetails.dart';
+import 'package:bankapp/Home/transfer_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,13 +9,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class AddBeneficiaryDetailsScreen extends StatefulWidget {
   final String bankName;
+  final String accountNumber;
   final String imageUrl;
   final String username; // Add this property
+
 
   AddBeneficiaryDetailsScreen({
     required this.bankName,
     required this.imageUrl,
-    required this.username, // Add this parameter
+    required this.username,
+    required this.accountNumber,
+
   });
 
   @override
@@ -25,45 +30,38 @@ class AddBeneficiaryDetailsScreen extends StatefulWidget {
 class _AddBeneficiaryDetailsScreenState
     extends State<AddBeneficiaryDetailsScreen> {
   // Define a function to handle the click action
-  String userName = '';
   final TextEditingController nickNameController = TextEditingController();
 
-  Future<void> fetchUserData() async {
-    try {
-      final userId = FirebaseAuth.instance.currentUser!.uid;
-      final userDoc = await FirebaseFirestore.instance.collection("users").doc(userId).get();
 
-      if (userDoc.exists) {
-        setState(() {
-          userName = userDoc['name'];
-        });
-      }
-    } catch (e) {
-      print("Error fetching user data: $e");
-    }
-  }
   Future<void> storeBeneficiaryDetails() async {
     try {
       final userId = FirebaseAuth.instance.currentUser!.uid;
 
       // Create a reference to the beneficiary collection
       final beneficiaryRef =
-      FirebaseFirestore.instance.collection("confirmbeneficiarydetails");
+      FirebaseFirestore.instance.collection("beneficiaries");
 
       // Add the beneficiary details to Firestore
       await beneficiaryRef.add({
         'userId': userId,
         'bankName': widget.bankName,
         'imageUrl': widget.imageUrl,
-        'nickName': nickNameController.text, // Store the subject entered by the user
+        'nickName': nickNameController.text,
+         'receiverAccountNumber':widget.accountNumber,
+        'userName':widget.username
+
+
+        // Store the subject entered by the user
         // Add other beneficiary details here
       });
 
-      // Navigate to the next screen (you can replace NextScreen with your desired screen)
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => FromAccountToAccountScreen(),
+          builder: (context) => TransferScreen(
+
+
+          ),
         ),
       );
     } catch (e) {
@@ -72,11 +70,7 @@ class _AddBeneficiaryDetailsScreenState
   }
 
 
-  @override
-  void initState() {
-    super.initState();
-    fetchUserData();
-  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -136,12 +130,14 @@ class _AddBeneficiaryDetailsScreenState
                   ],
                 ),
               ),
+
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+
                     TextButton(
                         onPressed: () {},
                         child: Text(
@@ -154,6 +150,7 @@ class _AddBeneficiaryDetailsScreenState
                     SizedBox(
                       height: 10,
                     ),
+
                     Container(
                       padding: EdgeInsets.only(left: 20),
                       height: 60,
@@ -172,7 +169,7 @@ class _AddBeneficiaryDetailsScreenState
                             width: 10,
                           ),
                           Text(
-                              widget.bankName,
+                            widget.bankName,
                             style: TextStyle(color: Colors.black, fontSize: 17),
                           )
                         ],
@@ -183,7 +180,7 @@ class _AddBeneficiaryDetailsScreenState
               ),
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 37, vertical: 20),
+                const EdgeInsets.symmetric(horizontal: 37, vertical: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -209,27 +206,27 @@ class _AddBeneficiaryDetailsScreenState
                         padding: const EdgeInsets.all(15.0),
                         child: Column(
                           children: [
-                          Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Account Title',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Account Title',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                                Text(
+                                  '${widget.username}',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              '${widget.username}',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
-                            ),
-                          ],
-                        ),
 
                             SizedBox(
                               height: 11,
@@ -244,7 +241,7 @@ class _AddBeneficiaryDetailsScreenState
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                'Bank Name',
+                                  'Bank Name',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -372,4 +369,3 @@ class _AddBeneficiaryDetailsScreenState
     );
   }
 }
-

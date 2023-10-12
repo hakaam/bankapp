@@ -1,3 +1,4 @@
+import 'package:bankapp/Home/home_screen.dart';
 import 'package:bankapp/Pages/Auth/signin.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +20,7 @@ class SignUpScreen extends StatelessWidget {
         password: passwordController.text,
       );
       // Navigate to the home screen after successful signup
-      Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
     } catch (e) {
       // Handle signup errors, show error message
       showDialog(
