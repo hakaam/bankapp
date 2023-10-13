@@ -79,19 +79,5 @@ class AuthProvider with ChangeNotifier {
     await _auth.signOut();
   }
 
-  Future<Map<String, dynamic>> fetchUserBalance() async {
-    try {
-      final currentUser = _auth.currentUser;
-      if (currentUser != null) {
-        DocumentSnapshot userDoc =
-            await _firestore.collection("users").doc(currentUser.uid).get();
-        if (userDoc.exists) {
-          return userDoc['balances'];
-        }
-      }
-    } catch (e) {
-      print("Error fetching user balance: $e");
-    }
-    return {};
-  }
+
 }

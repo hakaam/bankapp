@@ -5,11 +5,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../Pages/Auth/signin.dart';
+import '../Providers/Authprovider/auth_provider.dart';
+
 class TransferScreen extends StatefulWidget {
   State<TransferScreen> createState() => _TransferScreenState();
 }
 
 class _TransferScreenState extends State<TransferScreen> {
+  AuthProvider authProvider = AuthProvider();
+
+
   Future<List<Map<String, dynamic>>> fetchBeneficiaryData() async {
     try {
       final userId = FirebaseAuth.instance.currentUser!.uid;
@@ -78,7 +84,15 @@ class _TransferScreenState extends State<TransferScreen> {
                     Row(
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                          try {
+                            await authProvider.signOut();
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (context) => SignInScreen()),
+                            );
+                          } catch (e) {
+                          }
+                        },
                           icon: Icon(Icons.power_settings_new,
                               color: Colors.white),
                         ),

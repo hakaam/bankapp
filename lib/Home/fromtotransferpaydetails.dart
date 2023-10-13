@@ -3,6 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../Pages/Auth/signin.dart';
+import '../Providers/Authprovider/auth_provider.dart';
+
 class FromToTransferPayDetailsScreen extends StatefulWidget {
   final String fromAccountUserName;
   final String accountTitle;
@@ -33,6 +36,8 @@ class FromToTransferPayDetailsScreen extends StatefulWidget {
 
 class _FromToTransferPayDetailsScreenState
     extends State<FromToTransferPayDetailsScreen> {
+  AuthProvider authProvider = AuthProvider();
+
   late double userBalance;
 
   @override
@@ -175,7 +180,15 @@ class _FromToTransferPayDetailsScreenState
                     Row(
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            try {
+                              await authProvider.signOut();
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (context) => SignInScreen()),
+                              );
+                            } catch (e) {
+                            }
+                          },
                           icon: Icon(Icons.power_settings_new,
                               color: Colors.white),
                         ),

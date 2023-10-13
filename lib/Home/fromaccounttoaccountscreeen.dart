@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../Pages/Auth/signin.dart';
+import '../Providers/Authprovider/auth_provider.dart';
 import '../utils/common.dart';
 import 'fromtotransferpaydetails.dart';
 
@@ -28,6 +30,9 @@ class FromAccountToAccountScreen extends StatefulWidget {
 
 class _FromAccountToAccountScreenState
     extends State<FromAccountToAccountScreen> {
+  AuthProvider authProvider = AuthProvider();
+
+
   String? selectedOption = 'Others';
   List<String> options = [
     'Card Bill Payment',
@@ -211,11 +216,17 @@ class _FromAccountToAccountScreenState
                     Row(
                       children: [
                         IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.power_settings_new,
-                            color: Colors.white,
-                          ),
+                          onPressed: () async {
+                            try {
+                              await authProvider.signOut();
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (context) => SignInScreen()),
+                              );
+                            } catch (e) {
+                            }
+                          },
+                          icon: Icon(Icons.power_settings_new,
+                              color: Colors.white),
                         ),
                       ],
                     ),

@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../Pages/Auth/signin.dart';
+import '../Providers/Authprovider/auth_provider.dart';
 import 'addbeneficiarydetailscreen.dart';
 
 class AddBeneficiaryAccountNumberScreen extends StatefulWidget {
@@ -19,6 +21,8 @@ class AddBeneficiaryAccountNumberScreen extends StatefulWidget {
 
 class _AddBeneficiaryAccountNumberScreenState
     extends State<AddBeneficiaryAccountNumberScreen> {
+  AuthProvider authProvider = AuthProvider();
+
   TextEditingController accountNumberController = TextEditingController();
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -109,7 +113,15 @@ class _AddBeneficiaryAccountNumberScreenState
                     Row(
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            try {
+                              await authProvider.signOut();
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (context) => SignInScreen()),
+                              );
+                            } catch (e) {
+                            }
+                          },
                           icon: Icon(Icons.power_settings_new,
                               color: Colors.white),
                         ),

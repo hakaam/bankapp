@@ -4,12 +4,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../Pages/Auth/signin.dart';
+import '../Providers/Authprovider/auth_provider.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  AuthProvider authProvider = AuthProvider();
+
   String selectedCurrency = 'PKR';
 
   String userName = '';
@@ -101,7 +106,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     Row(
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            try {
+                              await authProvider.signOut();
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (context) => SignInScreen()),
+                              );
+                            } catch (e) {
+                            }
+                          },
                           icon: Icon(Icons.power_settings_new,
                               color: Colors.white),
                         ),
@@ -110,22 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              // Container(
-              //   width: double.infinity,
-              //   color: Colors.blue.shade600,
-              //   height: 50,
-              //   padding: EdgeInsets.only(left: 20),
-              //   child: Align(
-              //     alignment: Alignment.centerLeft,
-              //     child: const Text(
-              //       "Sraton Bank",
-              //       style: TextStyle(
-              //           color: Colors.white,
-              //           fontWeight: FontWeight.w600,
-              //           fontSize: 20),
-              //     ),
-              //   ),
-              // )
+
             ],
           ),
         ),

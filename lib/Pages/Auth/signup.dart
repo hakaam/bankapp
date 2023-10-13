@@ -5,15 +5,27 @@ import 'package:provider/provider.dart';
 
 import '../../Providers/Authprovider/auth_provider.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool hasText = false; // Initialize it in your state class
+  bool isSigningUp = false; // Add a state variable for tracking the sign-up process
 
   void _signUp(BuildContext context) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     try {
+      // Set the state variable to true to show the progress indicator
+      setState(() {
+        isSigningUp = true;
+      });
+
       await authProvider.signUp(
         name: nameController.text,
         email: emailController.text,
@@ -40,98 +52,147 @@ class SignUpScreen extends StatelessWidget {
           );
         },
       );
+    } finally {
+      // Set the state variable back to false to hide the progress indicator
+      setState(() {
+        isSigningUp = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Sign Up'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: ListView(
-          children: [
-            IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: Icon(Icons.arrow_back),
-            ),
-            Center(
-              child: Image.network(
-                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxISUh29JCh76Q0sJeVWYmHRN0Nb2dHLcL1Il-d0-PYvF7aYmrncNJU3FazosIpe4eR5w&usqp=CAU',
-                scale: 2,
-              ),
-            ),
-            SizedBox(height: 30),
-            Center(
-              child: Text(
-                'Sign Up',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-            ),
-            SizedBox(height: 15),
-            TextFormField(
-              controller: nameController,
-              decoration: InputDecoration(
-                hintText: 'Enter Name',
-                border: OutlineInputBorder(),
-                labelText: 'Name',
-              ),
-            ),
-            SizedBox(height: 15),
-            TextFormField(
-              controller: emailController,
-              decoration: InputDecoration(
-                hintText: 'Enter Email',
-                border: OutlineInputBorder(),
-                labelText: 'Email',
-              ),
-            ),
-            SizedBox(height: 15),
-            TextFormField(
-              controller: passwordController,
-              decoration: InputDecoration(
-                hintText: 'Enter Password',
-                border: OutlineInputBorder(),
-                labelText: 'Password',
-              ),
-              obscureText: true,
-            ),
-            SizedBox(height: 15),
-            Container(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () => _signUp(context),
-                child: Text('Sign Up'),
-              ),
-            ),
-            SizedBox(height: 20),
-            InkWell(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen()));
+      backgroundColor:Colors.blue.shade200,
 
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Already have an Account?',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>SignInScreen()));
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.white,
+            size: 24,
+          ),
+        ),
+        title: Text('Register',style: TextStyle(
+          letterSpacing: 2,
+          fontSize: 22,
+
+
+
+        ),),
+        backgroundColor:Colors.blue.shade600,
+
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 15,
+                ),
+                Text(
+                  'Enter details below to register',
+                  style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 30),
+                TextFormField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    hintText: 'Name',
+                    hintStyle: TextStyle(color: Colors.white, fontSize: 20),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
                   ),
-                  SizedBox(width: 3),
-                  Text(
-                    'Sign In',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.normal),
+                  style: TextStyle(color: hasText ? Colors.grey : Colors.white),
+
+
+                ),
+                SizedBox(height: 30),
+                TextFormField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    hintText: 'Username',
+                    hintStyle: TextStyle(color: Colors.white, fontSize: 20),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
                   ),
-                ],
+                  // onChanged: (value) {
+                  //   setState(() {
+                  //     hasText = value.isNotEmpty;
+                  //   });
+                  // },
+                  style: TextStyle(color: hasText ? Colors.grey : Colors.white),
+                ),
+                SizedBox(height: 30),
+                TextFormField(
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    hintText: 'Password',
+                    hintStyle: TextStyle(color: Colors.white, fontSize: 20),
+                    labelStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                  ),
+                  // onChanged: (value) {
+                  //   setState(() {
+                  //     hasText = value.isNotEmpty;
+                  //   });
+                  // },
+                  style: TextStyle(color: hasText ? Colors.grey : Colors.white),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue.shade600,
+              ),
+              onPressed: isSigningUp ? null : () => _signUp(context), // Disable the button when signing up
+              child: isSigningUp
+                  ? Center(
+                  child: CircularProgressIndicator(
+
+                  )) // Show the progress indicator when signing up
+                  : Text(
+                'Next',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
