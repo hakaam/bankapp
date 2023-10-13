@@ -42,7 +42,7 @@ dependencies:
   cloud_firestore: ^4.9.2
   firebase_storage: ^11.2.7
   shared_preferences: ^2.2.1
-
+  animated_text_kit: ^4.2.2
 
 dev_dependencies:
   flutter_test:

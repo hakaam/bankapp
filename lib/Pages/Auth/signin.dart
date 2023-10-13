@@ -4,10 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../Providers/Authprovider/auth_provider.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
-class SignInScreen extends StatelessWidget {
+class SignInScreen extends StatefulWidget {
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController emailController = TextEditingController();
+
   final TextEditingController passwordController = TextEditingController();
+
+  bool passwordVisible = false;
+  bool hasText = false; // Initialize it in your state class
 
   void _signIn(BuildContext context) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -18,7 +28,8 @@ class SignInScreen extends StatelessWidget {
         password: passwordController.text,
       );
       // Navigate to the home screen after successful signin
-      Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => HomeScreen()));
     } catch (e) {
       // Handle signin errors, show error message
       showDialog(
@@ -31,7 +42,8 @@ class SignInScreen extends StatelessWidget {
               TextButton(
                 child: Text('OK'),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.push(context, MaterialPageRoute(
+                      builder: (context)=>SignInScreen()));
                 },
               ),
             ],
@@ -44,118 +56,169 @@ class SignInScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 20,),
-            IconButton(onPressed: (){
-              Navigator.pop(context);
-            },
-                icon: Icon(Icons.arrow_back)
-            ),
-            SizedBox(height: 30,),
-
-            Center(
-              child: Image.network('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxISUh29JCh76Q0sJeVWYmHRN0Nb2dHLcL1Il-d0-PYvF7aYmrncNJU3FazosIpe4eR5w&usqp=CAU',
-                scale: 2,
+      child: Container(
+        decoration: new BoxDecoration(
+          gradient: new LinearGradient(
+              colors: [Colors.deepPurple.shade700, Colors.purple.shade500],
+              begin: const FractionalOffset(0.5, 0.0),
+              end: const FractionalOffset(0.0, 0.5),
+              stops: [0.0, 1.0],
+              tileMode: TileMode.clamp),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(child: Container(
+                  width: 150,
+                  height: 150,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                  ),
+                  child: Image.asset('images/login.jpg'))),
+              SizedBox(
+                height: 50,
               ),
-            ),
-            SizedBox(height: 50,),
-
-            Center(
-              child: Text(
-                'Sign In',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            TextFormField(
-              controller: emailController,
-
-              decoration: InputDecoration(
-                  hintText: 'Enter Email',
-                  border: OutlineInputBorder(), labelText: 'Email'),
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            TextFormField(
-              controller: passwordController,
-              decoration: InputDecoration(
-                  hintText: 'Enter Password',
-                  border: OutlineInputBorder(), labelText: 'Password'),
-              obscureText: true,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            InkWell(
-              onTap: (){
-                Navigator.pushNamed(context, '/forgot_password');
-
-              },
-              child: Container(
-                alignment: Alignment.bottomRight,
-                  child: Text('Forgot Password?')),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () => _signIn(context),
-                child: Text('Sign In'),
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(
-                      builder: (context)=>PhoneNumberForm()));
+              TextFormField(
+                controller: emailController,
+                decoration: InputDecoration(
+                  hintText: 'Username',
+                  hintStyle: TextStyle(color: Colors.grey, fontSize: 20),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey),
+                  ),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    hasText = value.isNotEmpty;
+                  });
                 },
-                child: Text('PhoneNumber'),
+                style: TextStyle(color: hasText ? Colors.grey : Colors.white),
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            InkWell(
-              onTap: () {
-                Navigator.pushReplacementNamed(context, '/signup');
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              SizedBox(
+                height: 25,
+              ),
+              TextFormField(
+                controller: passwordController,
+                obscureText:
+                    !passwordVisible, // Set obscureText based on passwordVisible
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      passwordVisible ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        passwordVisible = !passwordVisible;
+                      });
+                    },
+                  ),
+                  labelText: 'Password',
+                  hintStyle: TextStyle(color: Colors.grey),
+                  labelStyle: TextStyle(color: Colors.grey, fontSize: 22),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Colors.grey), // Change the color here
+                  ),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Colors.grey), // Change the color here
+                  ),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    hasText = value.isNotEmpty;
+                  });
+                },
+                style: TextStyle(color: hasText ? Colors.grey : Colors.white),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, '/forgot_password');
+                },
+                child: Container(
+                    alignment: Alignment.bottomRight,
+                    child: Text(
+                      'Forgot Password?',
+                      style: TextStyle(
+                          color: Colors.orange,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17),
+                    )),
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              Row(
                 children: [
-                  Text(
-                    'Dont have an Account?',
-                    style:
-                    TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => _signIn(context),
+                      child: Container(
+                        height: 50.0,
+                        decoration: new BoxDecoration(
+                          color: Colors.deepPurple,
+                          border:
+                              new Border.all(color: Colors.white, width: 2.0),
+                          borderRadius: new BorderRadius.circular(7.0),
+                        ),
+                        child: new Center(
+                          child: new Text(
+                            'Login',
+                            style: new TextStyle(
+                                fontSize: 18.0,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                   SizedBox(
-                    width: 3,
+                    width: 15,
                   ),
-                  Text(
-                    'Sign Up',
-                    style:
-                    TextStyle(fontSize: 20, fontWeight: FontWeight.normal),
-                  )
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacementNamed(context, '/signup');
+                      },
+                      child: Container(
+                        height: 50.0,
+                        decoration: new BoxDecoration(
+                          color: Colors.brown,
+                          border:
+                              new Border.all(color: Colors.white, width: 2.0),
+                          borderRadius: new BorderRadius.circular(7.0),
+                        ),
+                        child: new Center(
+                          child: new Text(
+                            'Register',
+                            style: new TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
-            )
-          ],
+              SizedBox(
+                height: 20,
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -4,6 +4,7 @@ import 'package:bankapp/Home/bank_screen.dart';
 import 'package:bankapp/Home/fromaccounttoaccountscreeen.dart';
 import 'package:bankapp/Home/transfer_screen.dart';
 import 'package:bankapp/Pages/Auth/forgot_password.dart';
+import 'package:bankapp/PhoneAuth/otp.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -35,7 +36,7 @@ void main() async {
         debugShowCheckedModeBanner: false,
         initialRoute: '/',
         routes: {
-          '/': (context) => SignInScreen(),
+          '/': (context) => PhoneScreen(),
           '/signup': (context) => SignUpScreen(),
           '/forgot_password': (context) => ForgotPasswordScreen(),
 
@@ -47,7 +48,6 @@ void main() async {
 
 
 
-          '/otp': (context) => OtpScreen(),
         },
       ),
     ),
