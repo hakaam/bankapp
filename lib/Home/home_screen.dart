@@ -1,4 +1,3 @@
-import 'package:bankapp/Home/currency_converter.dart';
 import 'package:bankapp/Home/transfer_screen.dart';
 import 'package:bankapp/utils/common.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,13 +14,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String userName = '';
   Map<String, dynamic> userBalances = {};
-
-  void updateUserBalance(double newBalance) {
-    setState(() {
-      Common.balance = newBalance.toInt();
-      userBalances[selectedCurrency] = newBalance;
-    });
-  }
 
   Future<void> fetchUserBalance() async {
     try {
@@ -41,10 +33,10 @@ class _HomeScreenState extends State<HomeScreen> {
           balances["USD"] = balanceUSD;
           balances["CAD"] = balanceCAD;
 
-            setState(() {
-              userBalances = balances;
-            });
-
+          setState(() {
+            Common.userBalances = balances;
+            Common.currency = "PKR";
+          });
         }
       }
     } catch (e) {
@@ -81,131 +73,274 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 50,
-            ),
-            Center(
-              child: Image.network(
-                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxISUh29JCh76Q0sJeVWYmHRN0Nb2dHLcL1Il-d0-PYvF7aYmrncNJU3FazosIpe4eR5w&usqp=CAU',
-                scale: 2,
-              ),
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            Card(
-              elevation: 8,
-              child: Container(
-                padding: EdgeInsets.all(10),
-                height: 120,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return Scaffold(
+      backgroundColor: Colors.blue.shade200,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                height: 65,
+                padding: EdgeInsets.only(left: 20),
+                color: Colors.blue.shade600,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '${userBalances[selectedCurrency]?.toStringAsFixed(2) ?? "0.00"} $selectedCurrency',
+                          "Straton Bank",
                           style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                          ),
-                        ),
-                        Flexible(
-                          child: Column(
-                            children: [
-                              DropdownButton<String>(
-                                value: selectedCurrency,
-                                onChanged: (newValue) {
-                                  setState(() {
-                                    selectedCurrency = newValue!;
-                                    Common.currency = selectedCurrency;
-                                    Common.balance =
-                                        userBalances[selectedCurrency];
-                                  });
-                                },
-                                items: ['PKR', 'USD', 'CAD']
-                                    .map((String currency) {
-                                  return DropdownMenuItem<String>(
-                                    value: currency,
-                                    child: Text(currency),
-                                  );
-                                }).toList(),
-                              ),
-                            ],
-                          ),
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 20),
                         ),
                       ],
                     ),
                     Row(
                       children: [
-                        Text(
-                          '$userName',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                          ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.power_settings_new,
+                              color: Colors.white),
                         ),
                       ],
-                    ),
+                    )
                   ],
                 ),
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              width: double.infinity,
-              height: 45,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TransferScreen(),
+              // Container(
+              //   width: double.infinity,
+              //   color: Colors.blue.shade600,
+              //   height: 50,
+              //   padding: EdgeInsets.only(left: 20),
+              //   child: Align(
+              //     alignment: Alignment.centerLeft,
+              //     child: const Text(
+              //       "Sraton Bank",
+              //       style: TextStyle(
+              //           color: Colors.white,
+              //           fontWeight: FontWeight.w600,
+              //           fontSize: 20),
+              //     ),
+              //   ),
+              // )
+            ],
+          ),
+        ),
+      ),
+      body: Material(
+        color: Colors.blue.shade200,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 50,
+              ),
+              Card(
+                elevation: 8,
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Spacer(),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '$userName'.toUpperCase(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black,
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            '${Common.userBalances[selectedCurrency]?.toStringAsFixed(2) ?? "0.00"} $selectedCurrency',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: Colors.blue,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Spacer(),
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            DropdownButton<String>(
+                              value: selectedCurrency,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectedCurrency = newValue!;
+                                  Common.currency = selectedCurrency;
+                                });
+                              },
+                              items:
+                                  ['PKR', 'USD', 'CAD'].map((String currency) {
+                                return DropdownMenuItem<String>(
+                                  value: currency,
+                                  child: Text(currency),
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 50,
+              ),
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TransferScreen(),
+                        ),
+                      ).then((result) {
+                        setState(() {
+                          Common.userBalances[Common.currency] = result;
+                        });
+                      });
+                    },
+                    child: Container(
+                      color: Colors.transparent,
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'images/trans1.png',
+                            height: 80,
+                            width: 80,
+                            color: Colors.white,
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'Transfer',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
                     ),
-                  );
-                },
-                child: Text('Transfer'),
+                  ),
+                  Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TransferScreen(),
+                        ),
+                      ).then((result) {
+                     
+                        setState(() {
+                          Common.userBalances[Common.currency] = result;
+                        });
+                      });
+                    },
+                    child: Container(
+                      color: Colors.transparent,
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'images/stat.png',
+                            height: 70,
+                            width: 70,
+                            color: Colors.white,
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'Statement',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              width: double.infinity,
-              height: 45,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Add logic to handle the "Statement" button click
-                },
-                child: Text('Statement'),
+              SizedBox(
+                height: 20,
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Container(
-              width: double.infinity,
-              height: 45,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Add logic to handle the "Charities" button click
-                },
-                child: Text('Charities'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TransferScreen(),
+                        ),
+                      ).then((result) {
+                        setState(() {
+                          Common.userBalances[Common.currency] = result;
+                        });
+                      });
+                    },
+                    child: Container(
+                      color: Colors.transparent,
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'images/char2.png',
+                            height: 80,
+                            width: 80,
+                            color: Colors.white,
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            'Charities',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            )
-          ],
+            ],
+          ),
         ),
       ),
     );

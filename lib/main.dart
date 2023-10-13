@@ -1,16 +1,9 @@
-import 'package:bankapp/Home/addbeneficiarydetailscreen.dart';
-import 'package:bankapp/Home/addbenficiaryaccountnumber.dart';
-import 'package:bankapp/Home/bank_screen.dart';
-import 'package:bankapp/Home/fromaccounttoaccountscreeen.dart';
-import 'package:bankapp/Home/transfer_screen.dart';
 import 'package:bankapp/Pages/Auth/forgot_password.dart';
-import 'package:flutter/material.dart';
-
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'OTP/screens/OTP/otp_screen.dart';
-import 'Home/home_screen.dart';
 import 'OTP/services/auth_repo.dart';
 import 'OTP/services/auth_repo_impl.dart';
 import 'Pages/Auth/signin.dart';
@@ -28,7 +21,8 @@ void main() async {
           create: (context) => AuthProvider(),
         ),
         Provider<AuthRepo>(
-          create: (context) => AuthRepoImp(), // Provide an instance of AuthRepoImp.
+          create: (context) =>
+              AuthRepoImp(), // Provide an instance of AuthRepoImp.
         ),
       ],
       child: MaterialApp(
@@ -38,15 +32,6 @@ void main() async {
           '/': (context) => SignInScreen(),
           '/signup': (context) => SignUpScreen(),
           '/forgot_password': (context) => ForgotPasswordScreen(),
-
-
-
-
-
-
-
-
-
           '/otp': (context) => OtpScreen(),
         },
       ),
@@ -55,8 +40,6 @@ void main() async {
 }
 
 // ... Rest of your code ...
-
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

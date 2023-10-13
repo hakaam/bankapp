@@ -1,14 +1,11 @@
 import 'package:bankapp/Home/bank_screen.dart';
 import 'package:bankapp/Home/fromaccounttoaccountscreeen.dart';
+import 'package:bankapp/utils/common.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class TransferScreen extends StatefulWidget {
-
-
-
-
   State<TransferScreen> createState() => _TransferScreenState();
 }
 
@@ -39,179 +36,183 @@ class _TransferScreenState extends State<TransferScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              height: 65,
-              color: Colors.purple,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.arrow_back_ios_new,
-                            color: Colors.white,
-                          )),
-                      Text(
-                        'Send Money',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                            color: Colors.white),
-                      )
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.home_outlined,
-                          color: Colors.orange,
+    print(Common.userBalances);
+    return WillPopScope(
+      onWillPop: () async {
+        print("Mann");
+        print(Common.userBalances[Common.currency]);
+        Navigator.pop(context, Common.userBalances[Common.currency]);
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Container(
+                height: 65,
+                color: Colors.blue.shade600,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pop(context,
+                                  Common.userBalances[Common.currency]);
+                            },
+                            icon: Icon(
+                              Icons.arrow_back_ios_new,
+                              color: Colors.white,
+                            )),
+                        Text(
+                          'Send Money',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                              color: Colors.white),
+                        )
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.power_settings_new,
+                              color: Colors.white),
                         ),
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.notifications, color: Colors.orange),
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.power_settings_new,
-                            color: Colors.orange),
-                      ),
-                    ],
-                  )
-                ],
+                      ],
+                    )
+                  ],
+                ),
               ),
-            ),
-            Container(
-              height: 60,
-              decoration: BoxDecoration(
-                color: Colors.white,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Search(e.g.nick,account,title,bank)',
-                    hintStyle: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.w700),
-                    border: InputBorder.none,
-                    prefixIcon: Padding(
-                      padding: EdgeInsets.only(
-                          left: 20, right: 8), // Adjust the padding as needed
-                      child: Icon(
-                        Icons.search,
-                        size: 25,
+              Container(
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Search(e.g.nick,account,title,bank)',
+                      hintStyle: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.w700),
+                      border: InputBorder.none,
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.only(
+                            left: 20, right: 8), // Adjust the padding as needed
+                        child: Icon(
+                          Icons.search,
+                          size: 25,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 12),
-              child: Row(
-                children: [
-                  Flexible(
-                    flex: 1,
-                    child: Container(
-                      child: Image.asset('images/profile.PNG'),
-                      // Your existing code for the image
-                      // ...
-                    ),
-                  ),
-                  Flexible(
-                    flex: 2,
-                    child: Container(
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => BankScreen(
-                                   // Pass your selectedCurrency
-
-                                  )));
-                        },
-                        child: Text(
-                          'Add New Beneficiary',
-                          style: TextStyle(
-                              color: Colors.orange,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      // Your existing code for "Add New Beneficiary"
-                      // ...
-                    ),
-                  ),
-                ],
+              SizedBox(
+                height: 15,
               ),
-            ),
-
-            SizedBox(
-              height: 4,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 60),
-              child: Divider(
-                color: Colors.grey,
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Expanded(
-              child: StreamBuilder<List<Map<String, dynamic>>>(
-                stream: Stream.fromFuture(fetchBeneficiaryData()),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData && snapshot.data != null) {
-                    final beneficiaryData = snapshot.data!;
-
-                    return ListView(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
+              Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => BankScreen())).then((result) {
+                      setState(() {
+                        fetchBeneficiaryData();
+                      });
+                    });
+                  },
+                  child: Container(
+                    color: Colors.transparent,
+                    child: Row(
                       children: [
-                        SizedBox(height: 15),
-                        for (final data in beneficiaryData)
-                          BeneficiaryItem(
-                            bankName: data['bankName'],
-                            receiverAccountNumber:
-                                data['receiverAccountNumber'],
-                            imagePath: data['imageUrl'],
-                            accountTitle: data['userName'],
-                            nickName: data['nickName'],
-                            documentId:
-                                data['documentId'], // Pass the documentId here
+                        Flexible(
+                          flex: 1,
+                          child: Container(
+                            child: Image.asset(
+                              'images/profile.PNG',
+                            ),
+                            // Your existing code for the image
+                            // ...
                           ),
+                        ),
+                        Flexible(
+                          flex: 2,
+                          child: Container(
+                            child: Text(
+                              'Add New Beneficiary',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            // Your existing code for "Add New Beneficiary"
+                            // ...
+                          ),
+                        ),
                       ],
-                    );
-                  } else if (snapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else {
-                    return Center(
-                      child: Text('No beneficiaries found.'),
-                    );
-                  }
-                },
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ],
+              SizedBox(
+                height: 4,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 60),
+                child: Divider(
+                  color: Colors.grey,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Expanded(
+                child: StreamBuilder<List<Map<String, dynamic>>>(
+                  stream: Stream.fromFuture(fetchBeneficiaryData()),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData && snapshot.data != null) {
+                      final beneficiaryData = snapshot.data!;
+
+                      return ListView(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        children: [
+                          SizedBox(height: 15),
+                          for (final data in beneficiaryData)
+                            BeneficiaryItem(
+                              bankName: data['bankName'],
+                              receiverAccountNumber:
+                                  data['receiverAccountNumber'],
+                              imagePath: data['imageUrl'],
+                              accountTitle: data['userName'],
+                              nickName: data['nickName'],
+                              documentId: data[
+                                  'documentId'], // Pass the documentId here
+                            ),
+                        ],
+                      );
+                    } else if (snapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else {
+                      return Center(
+                        child: Text('No beneficiaries found.'),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -219,7 +220,6 @@ class _TransferScreenState extends State<TransferScreen> {
 }
 
 class BeneficiaryItem extends StatelessWidget {
-
   final String imagePath;
   final String accountTitle;
   final String bankName;
@@ -292,9 +292,6 @@ class BeneficiaryItem extends StatelessWidget {
                 nickName: nickName,
                 bankName: bankName,
                 receiverAccountNumber: receiverAccountNumber,
-
-
-
               ),
             ),
           );
@@ -321,7 +318,7 @@ class BeneficiaryItem extends StatelessWidget {
                         Text(
                           accountTitle,
                           style: TextStyle(
-                            color: Colors.orange,
+                            color: Colors.white,
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                           ),

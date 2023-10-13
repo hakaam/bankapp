@@ -1,4 +1,3 @@
-import 'package:bankapp/Home/fromaccounttoaccountscreeen.dart';
 import 'package:bankapp/utils/common.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -41,64 +40,86 @@ class _FromToTransferPayDetailsScreenState
     super.initState();
     userBalance = widget.userBalance;
   }
+
   Future<double> getReceiverBalanceFromFirestore() async {
     // Replace this with code to fetch the receiver's balance from Firestore
     try {
-      DocumentSnapshot receiverData = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.receiverAccountNumber)
-          .get();
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance.collection('users').get();
 
-      if (receiverData.exists) {
-        return receiverData['balance'].toDouble();
+      for (QueryDocumentSnapshot<Map<String, dynamic>> docSnapshot
+          in querySnapshot.docs) {
+        Map<String, dynamic> data = docSnapshot.data();
+        print("data: $data");
+        if (data.containsKey('accountNumber') &&
+            data['accountNumber'] == widget.receiverAccountNumber) {
+          return data['balance${Common.currency}'];
+        }
       }
     } catch (e) {
       print('Error fetching receiver balance: $e');
     }
-    return -1; // Return a negative value to indicate an error
+    return -1;
   }
-  void updateReceiverBalanceInFirestore(double newBalance) {
+
+  void updateReceiverBalanceInFirestore(double newBalance) async {
     // Replace this with code to update the receiver's balance in Firestore
+
     try {
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.receiverAccountNumber)
-          .update({'balance': newBalance});
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance.collection('users').get();
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> docSnapshot
+          in querySnapshot.docs) {
+        Map<String, dynamic> data = docSnapshot.data();
+        if (data.containsKey('accountNumber') &&
+            data['accountNumber'] == widget.receiverAccountNumber) {
+          DocumentReference docRef = FirebaseFirestore.instance
+              .collection('users')
+              .doc(docSnapshot.id);
+          await docRef.update({'balance${Common.currency}': newBalance});
+        }
+      }
     } catch (e) {
-      print('Error updating receiver balance: $e');
+      print('Error fetching receiver balance: $e');
     }
   }
+
   void deductAmountFromBalance(double amount) {
     userBalance -= amount;
+    print("userBalance: $userBalance");
     updateBalanceInFirestore(userBalance);
   }
 
   void updateBalanceInFirestore(double newBalance) {
     User? currentUser = FirebaseAuth.instance.currentUser;
 
+    print("newBalance: ${newBalance}");
+    print(currentUser?.uid);
+    print(Common.currency);
+
     if (currentUser != null) {
-      // Update the balance in Firestore for the current user
       FirebaseFirestore.instance
           .collection('users')
           .doc(currentUser.uid)
-          .update({'balancePKR': newBalance});
+          .update({'balance${Common.currency}': newBalance});
     }
   }
 
-  Future<void> saveTransferDetailsToFirestore(double totalTransferredAmount) async {
+  Future<void> saveTransferDetailsToFirestore(
+      double transactionAmount, double remainingBalance) async {
     try {
       final CollectionReference transfersCollection =
-      FirebaseFirestore.instance.collection('transaction');
+          FirebaseFirestore.instance.collection('transaction');
 
       Map<String, dynamic> transferData = {
-        'fromAccountUserName': widget.fromAccountUserName,
-        'accountTitle': widget.accountTitle,
+        'senderTitle': widget.fromAccountUserName,
+        'receiverTitle': widget.accountTitle,
         'bankName': widget.bankName,
         'userAccountNumber': widget.accountNumber,
         'receiverAccountNumber': widget.receiverAccountNumber,
-        'nickName': widget.nickName,
-        'amount': widget.amount,
-        'totalAmount': totalTransferredAmount,
+        'transactionAmount': widget.amount,
+        'remainingBalance': remainingBalance,
         'timestamp': FieldValue.serverTimestamp(),
       };
 
@@ -116,7 +137,6 @@ class _FromToTransferPayDetailsScreenState
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,14 +147,16 @@ class _FromToTransferPayDetailsScreenState
             children: [
               Container(
                 height: 65,
-                color: Colors.purple,
+                color: Colors.blue.shade600,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
                           icon: Icon(
                             Icons.arrow_back_ios_new,
                             color: Colors.white,
@@ -154,19 +176,8 @@ class _FromToTransferPayDetailsScreenState
                       children: [
                         IconButton(
                           onPressed: () {},
-                          icon: Icon(
-                            Icons.home_outlined,
-                            color: Colors.orange,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.notifications, color: Colors.orange),
-                        ),
-                        IconButton(
-                          onPressed: () {},
                           icon: Icon(Icons.power_settings_new,
-                              color: Colors.orange),
+                              color: Colors.white),
                         ),
                       ],
                     ),
@@ -183,7 +194,7 @@ class _FromToTransferPayDetailsScreenState
                       'From',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.orange,
+                          color: Colors.white,
                           fontSize: 14),
                     ),
                     SizedBox(
@@ -236,7 +247,7 @@ class _FromToTransferPayDetailsScreenState
                       children: [
                         Text(
                           'To',
-                          style: TextStyle(color: Colors.orange, fontSize: 15),
+                          style: TextStyle(color: Colors.white, fontSize: 15),
                         ),
                         SizedBox(
                           height: 10,
@@ -353,7 +364,7 @@ class _FromToTransferPayDetailsScreenState
                         ),
                         Text(
                           'Transfer Details',
-                          style: TextStyle(color: Colors.orange, fontSize: 15),
+                          style: TextStyle(color: Colors.white, fontSize: 15),
                         ),
                         SizedBox(
                           height: 10,
@@ -498,23 +509,28 @@ class _FromToTransferPayDetailsScreenState
                       width: MediaQuery.of(context).size.width,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange,
+                          backgroundColor: Colors.blue.shade600,
                         ),
                         onPressed: () async {
                           double amountToTransfer = double.parse(widget.amount);
 
-                          if (amountToTransfer > 0 && amountToTransfer <= widget.userBalance) {
-
+                          if (amountToTransfer > 0 &&
+                              amountToTransfer <= widget.userBalance) {
                             deductAmountFromBalance(amountToTransfer);
-                            saveTransferDetailsToFirestore(amountToTransfer);
-                            // Deduct the entered amount from the sender's balance
-                            deductAmountFromBalance(amountToTransfer);
+                            saveTransferDetailsToFirestore(amountToTransfer,
+                                widget.userBalance - amountToTransfer);
 
-                            // Add the transfer amount to the receiver's balance
-                            double receiverBalance = await getReceiverBalanceFromFirestore();
+                            double receiverBalance =
+                                await getReceiverBalanceFromFirestore();
+                            receiverBalance += amountToTransfer;
 
-                            // receiverBalance += amount;
                             updateReceiverBalanceInFirestore(receiverBalance);
+
+                            Common.userBalances[Common.currency] =
+                                widget.userBalance - amountToTransfer;
+
+                            Navigator.pop(context);
+                            Navigator.pop(context);
                           } else {
                             showDialog(
                               context: context,

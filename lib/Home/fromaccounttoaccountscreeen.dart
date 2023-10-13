@@ -40,7 +40,7 @@ class _FromAccountToAccountScreenState
   TextEditingController amountController = TextEditingController();
 
   String selectedCurrency = Common.currency;
-  double userBalance = Common.balance.toDouble();
+  double userBalance = Common.userBalances[Common.currency]?.toDouble();
   String userName = ''; // To store the user's name
   String accountNumber = ''; // To store the user's account number
 
@@ -109,6 +109,73 @@ class _FromAccountToAccountScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: Container(
+        height: 58,
+        width: MediaQuery.of(context).size.width,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: Colors.blue.shade600,
+          ),
+          onPressed: () {
+            Future<void> handleNextButtonPressed() async {
+              String amountText = amountController.text;
+              if (amountText.isNotEmpty) {
+                double amount = double.tryParse(amountText) ?? 0.0;
+
+                if (amount > 0 && amount <= userBalance) {
+                  // Calculate the total transferred amount
+                  double totalTransferredAmount = amount;
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FromToTransferPayDetailsScreen(
+                        fromAccountUserName: userName,
+                        accountTitle: widget.accountTitle,
+                        bankName: widget.bankName,
+                        imagePath: widget.imagePath,
+                        accountNumber: accountNumber,
+                        nickName: widget.nickName,
+                        amount: amount.toStringAsFixed(2),
+                        userBalance: userBalance,
+                        receiverAccountNumber: widget.receiverAccountNumber,
+                      ),
+                    ),
+                  );
+                } else {
+                  // Handle insufficient balance
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Insufficient Balance'),
+                          content: Text(
+                              'Your balance is not sufficient for this transaction.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('OK'),
+                            ),
+                          ],
+                        );
+                      });
+                }
+              }
+            }
+
+            handleNextButtonPressed();
+          },
+          child: Text(
+            'Next',
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
       backgroundColor: Colors.black,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -116,14 +183,16 @@ class _FromAccountToAccountScreenState
             children: [
               Container(
                 height: 65,
-                color: Colors.purple,
+                color: Colors.blue.shade600,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
                           icon: Icon(
                             Icons.arrow_back_ios_new,
                             color: Colors.white,
@@ -144,22 +213,8 @@ class _FromAccountToAccountScreenState
                         IconButton(
                           onPressed: () {},
                           icon: Icon(
-                            Icons.home_outlined,
-                            color: Colors.orange,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.notifications,
-                            color: Colors.orange,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(
                             Icons.power_settings_new,
-                            color: Colors.orange,
+                            color: Colors.white,
                           ),
                         ),
                       ],
@@ -177,7 +232,7 @@ class _FromAccountToAccountScreenState
                       'From Account',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
-                        color: Colors.orange,
+                        color: Colors.white,
                         fontSize: 20,
                       ),
                     ),
@@ -241,7 +296,7 @@ class _FromAccountToAccountScreenState
                       'To Account',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
-                        color: Colors.orange,
+                        color: Colors.white,
                         fontSize: 20,
                       ),
                     ),
@@ -277,18 +332,18 @@ class _FromAccountToAccountScreenState
                       ),
                     ),
                     SizedBox(
-                      height: 17,
+                      height: 47,
                     ),
                     TextField(
                       style: TextStyle(color: Colors.white),
                       controller: amountController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Amount',
                         helperText:
                             "Enter an amount between Rs.1 and\n Rs.1,000,000.",
                         helperStyle: TextStyle(
                           fontSize: 17,
-                          color: Colors.orange,
+                          color: Colors.white,
                         ),
                         hintStyle: TextStyle(
                           color: Colors.white,
@@ -309,164 +364,9 @@ class _FromAccountToAccountScreenState
                     SizedBox(
                       height: 20,
                     ),
-                    Text(
-                      'Purpose of Payment',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: Colors.orange,
-                        fontSize: 20,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        _showOptionsDialog(context);
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            DropdownButtonFormField<String>(
-                              isExpanded: true,
-                              decoration: InputDecoration(
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                hintStyle: TextStyle(
-                                  color: Colors.transparent,
-                                ),
-                              ),
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                              value: selectedOption,
-                              items: [
-                                DropdownMenuItem<String>(
-                                  value: 'Others',
-                                  child: Center(
-                                    child: Text(
-                                      'Others',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                ...options.map((String option) {
-                                  return DropdownMenuItem<String>(
-                                    value: option,
-                                    child: Center(
-                                      child: Text(
-                                        option,
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                              ],
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  selectedOption = newValue!;
-                                });
-                              },
-                            ),
-                            Text(
-                              selectedOption ?? 'Others',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
                   ],
                 ),
               ),
-              SizedBox(
-                height: 120,
-              ),
-              Container(
-                height: 58,
-                width: MediaQuery.of(context).size.width,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.orange,
-                  ),
-                  onPressed: () {
-                    Future<void> handleNextButtonPressed() async {
-                      String amountText = amountController.text;
-                      if (amountText.isNotEmpty) {
-                        double amount = double.tryParse(amountText) ?? 0.0;
-
-                        if (amount > 0 && amount <= userBalance) {
-                          // Calculate the total transferred amount
-                          double totalTransferredAmount = amount;
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  FromToTransferPayDetailsScreen(
-                                fromAccountUserName: userName,
-                                accountTitle: widget.accountTitle,
-                                bankName: widget.bankName,
-                                imagePath: widget.imagePath,
-                                accountNumber: accountNumber,
-                                nickName: widget.nickName,
-                                amount: amount.toStringAsFixed(2),
-                                userBalance: userBalance,
-                                receiverAccountNumber:
-                                    widget.receiverAccountNumber,
-                              ),
-                            ),
-                          );
-                        } else {
-                          // Handle insufficient balance
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('Insufficient Balance'),
-                                  content: Text(
-                                      'Your balance is not sufficient for this transaction.'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              });
-                        }
-                      }
-                    }
-
-                    handleNextButtonPressed();
-                  },
-                  child: Text(
-                    'Next',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              )
             ],
           ),
         ),

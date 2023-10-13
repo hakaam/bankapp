@@ -1,6 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'addbeneficiarydetailscreen.dart';
 
@@ -8,12 +8,9 @@ class AddBeneficiaryAccountNumberScreen extends StatefulWidget {
   final String bankName;
   final String imageUrl;
 
-
   AddBeneficiaryAccountNumberScreen({
     required this.bankName,
     required this.imageUrl,
-
-
   });
   @override
   State<AddBeneficiaryAccountNumberScreen> createState() =>
@@ -31,11 +28,10 @@ class _AddBeneficiaryAccountNumberScreenState
       CollectionReference users = firestore.collection('users');
 
       QuerySnapshot querySnapshot =
-      await users.where('accountNumber', isEqualTo: accountNumber).get();
+          await users.where('accountNumber', isEqualTo: accountNumber).get();
 
       if (querySnapshot.docs.isNotEmpty) {
-        String username = querySnapshot.docs[0][
-        'name'];
+        String username = querySnapshot.docs[0]['name'];
 
         // Now, navigate to the next screen and pass the username
         Navigator.of(context).pushReplacement(
@@ -45,7 +41,6 @@ class _AddBeneficiaryAccountNumberScreenState
               imageUrl: widget.imageUrl,
               username: username,
               accountNumber: accountNumber,
-
 
               // Pass the fetched username
             ),
@@ -85,7 +80,7 @@ class _AddBeneficiaryAccountNumberScreenState
             children: [
               Container(
                 height: 65,
-                color: Colors.purple,
+                color: Colors.blue.shade600,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -111,13 +106,22 @@ class _AddBeneficiaryAccountNumberScreenState
                         ),
                       ],
                     ),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.power_settings_new,
+                              color: Colors.white),
+                        ),
+                      ],
+                    ),
                     // Rest of your AppBar content
                   ],
                 ),
               ),
               Padding(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -171,7 +175,7 @@ class _AddBeneficiaryAccountNumberScreenState
               ),
               Padding(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                 child: Column(
                   children: [
                     TextField(
@@ -180,10 +184,10 @@ class _AddBeneficiaryAccountNumberScreenState
                       decoration: InputDecoration(
                         hintText: 'Account Number/IBAN',
                         helperText:
-                        "PLEASE ENTER MEEZAN BANK 13/14\nDIGIT ACCOUNT NUMBER",
+                            "PLEASE ENTER MEEZAN BANK 13/14\nDIGIT ACCOUNT NUMBER",
                         helperStyle: TextStyle(
                           fontSize: 15,
-                          color: Colors.orange,
+                          color: Colors.white,
                         ),
                         hintStyle: TextStyle(
                           color: Colors.white,
@@ -212,9 +216,10 @@ class _AddBeneficiaryAccountNumberScreenState
                 width: MediaQuery.of(context).size.width,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
+                    backgroundColor: Colors.blue.shade600,
                   ),
                   onPressed: () {
+                    accountNumberController.text = "16970922743898";
                     String accountNumber = accountNumberController.text.trim();
 
                     if (accountNumber.isNotEmpty) {

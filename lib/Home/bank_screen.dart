@@ -1,11 +1,8 @@
 import 'package:bankapp/Home/addbenficiaryaccountnumber.dart';
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 class BankScreen extends StatefulWidget {
-
-
-
   @override
   _BankScreenState createState() => _BankScreenState();
 }
@@ -35,7 +32,7 @@ class _BankScreenState extends State<BankScreen> {
           children: [
             Container(
               height: 65,
-              color: Colors.purple,
+              color: Colors.blue.shade600,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -45,7 +42,8 @@ class _BankScreenState extends State<BankScreen> {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                        icon:
+                            Icon(Icons.arrow_back_ios_new, color: Colors.white),
                       ),
                       Text(
                         'Send Money',
@@ -61,15 +59,8 @@ class _BankScreenState extends State<BankScreen> {
                     children: [
                       IconButton(
                         onPressed: () {},
-                        icon: Icon(Icons.home_outlined, color: Colors.orange),
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.notifications, color: Colors.orange),
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.power_settings_new, color: Colors.orange),
+                        icon:
+                            Icon(Icons.power_settings_new, color: Colors.white),
                       ),
                     ],
                   ),
@@ -119,12 +110,14 @@ class _BankScreenState extends State<BankScreen> {
                     onTap: () {
                       // Handle the tap event for the bank item
 
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>AddBeneficiaryAccountNumberScreen(
-                          bankName:bank.name,
-                          imageUrl: bank.image,
-
-
-                      )));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  AddBeneficiaryAccountNumberScreen(
+                                    bankName: bank.name,
+                                    imageUrl: bank.image,
+                                  )));
                     },
                     child: Column(
                       children: [
@@ -152,7 +145,7 @@ class _BankScreenState extends State<BankScreen> {
                                         Text(
                                           bank.name, // Use bank's name
                                           style: TextStyle(
-                                            color: Colors.orange,
+                                            color: Colors.white,
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -193,7 +186,8 @@ class Bank {
 
 Future<List<Bank>> fetchBanks() async {
   try {
-    final querySnapshot = await FirebaseFirestore.instance.collection('banks').get();
+    final querySnapshot =
+        await FirebaseFirestore.instance.collection('banks').get();
     final banks = querySnapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
       return Bank(

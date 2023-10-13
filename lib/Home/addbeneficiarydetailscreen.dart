@@ -1,11 +1,6 @@
-import 'package:bankapp/Home/fromaccounttoaccountscreeen.dart';
-import 'package:bankapp/Home/fromtotransferpaydetails.dart';
-import 'package:bankapp/Home/transfer_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class AddBeneficiaryDetailsScreen extends StatefulWidget {
   final String bankName;
@@ -13,13 +8,11 @@ class AddBeneficiaryDetailsScreen extends StatefulWidget {
   final String imageUrl;
   final String username; // Add this property
 
-
   AddBeneficiaryDetailsScreen({
     required this.bankName,
     required this.imageUrl,
     required this.username,
     required this.accountNumber,
-
   });
 
   @override
@@ -32,14 +25,13 @@ class _AddBeneficiaryDetailsScreenState
   // Define a function to handle the click action
   final TextEditingController nickNameController = TextEditingController();
 
-
   Future<void> storeBeneficiaryDetails() async {
     try {
       final userId = FirebaseAuth.instance.currentUser!.uid;
 
       // Create a reference to the beneficiary collection
       final beneficiaryRef =
-      FirebaseFirestore.instance.collection("beneficiaries");
+          FirebaseFirestore.instance.collection("beneficiaries");
 
       // Add the beneficiary details to Firestore
       await beneficiaryRef.add({
@@ -47,41 +39,67 @@ class _AddBeneficiaryDetailsScreenState
         'bankName': widget.bankName,
         'imageUrl': widget.imageUrl,
         'nickName': nickNameController.text,
-         'receiverAccountNumber':widget.accountNumber,
-        'userName':widget.username
-
-
-        // Store the subject entered by the user
-        // Add other beneficiary details here
+        'receiverAccountNumber': widget.accountNumber,
+        'userName': widget.username
       });
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TransferScreen(
-
-
-          ),
-        ),
-      );
+      Navigator.pop(context);
+      Navigator.pop(context);
     } catch (e) {
       print("Error storing beneficiary details: $e");
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+      bottomNavigationBar: Row(
+        children: [
+          Flexible(
+            child: Container(
+              height: 58,
+              width: MediaQuery.of(context).size.width,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                  )),
+            ),
+          ),
+          Flexible(
+            child: Container(
+              height: 58,
+              width: MediaQuery.of(context).size.width,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade600),
+                  onPressed: storeBeneficiaryDetails,
+                  child: Text(
+                    'Add',
+                    style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                  )),
+            ),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
               Container(
                 height: 65,
-                color: Colors.purple,
+                color: Colors.blue.shade600,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -89,8 +107,8 @@ class _AddBeneficiaryDetailsScreenState
                       children: [
                         IconButton(
                           onPressed: () {
-                            Navigator.pop(context); // Go back to the previous screen
-
+                            Navigator.pop(
+                                context); // Go back to the previous screen
                           },
                           icon: Icon(
                             Icons.arrow_back_ios_new,
@@ -111,33 +129,20 @@ class _AddBeneficiaryDetailsScreenState
                       children: [
                         IconButton(
                           onPressed: () {},
-                          icon: Icon(
-                            Icons.home_outlined,
-                            color: Colors.orange,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.notifications, color: Colors.orange),
-                        ),
-                        IconButton(
-                          onPressed: () {},
                           icon: Icon(Icons.power_settings_new,
-                              color: Colors.orange),
+                              color: Colors.white),
                         ),
                       ],
                     ),
                   ],
                 ),
               ),
-
               Padding(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     TextButton(
                         onPressed: () {},
                         child: Text(
@@ -150,7 +155,6 @@ class _AddBeneficiaryDetailsScreenState
                     SizedBox(
                       height: 10,
                     ),
-
                     Container(
                       padding: EdgeInsets.only(left: 20),
                       height: 60,
@@ -180,13 +184,13 @@ class _AddBeneficiaryDetailsScreenState
               ),
               Padding(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 37, vertical: 20),
+                    const EdgeInsets.symmetric(horizontal: 37, vertical: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Confirm following benefeciary details',
-                      style: TextStyle(color: Colors.orange, fontSize: 15),
+                      'Confirm following beneficiary details',
+                      style: TextStyle(color: Colors.white, fontSize: 15),
                     ),
                     SizedBox(
                       height: 10,
@@ -227,7 +231,6 @@ class _AddBeneficiaryDetailsScreenState
                                 ),
                               ],
                             ),
-
                             SizedBox(
                               height: 11,
                             ),
@@ -258,7 +261,6 @@ class _AddBeneficiaryDetailsScreenState
                                 ),
                               ],
                             ),
-
                             SizedBox(
                               height: 11,
                             ),
@@ -289,7 +291,6 @@ class _AddBeneficiaryDetailsScreenState
                                 ),
                               ],
                             ),
-
                           ],
                         ),
                       ),
@@ -323,45 +324,6 @@ class _AddBeneficiaryDetailsScreenState
                   ],
                 ),
               ),
-              SizedBox(height: 150,),
-              Row(
-                children: [
-                  Flexible(
-                    child: Container(
-                      height: 58,
-                      width: MediaQuery.of(context).size.width,
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey),
-                          onPressed: () {},
-                          child: Text(
-                            'Cancel',
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          )),
-                    ),
-                  ),
-                  Flexible(
-                    child: Container(
-                      height: 58,
-                      width: MediaQuery.of(context).size.width,
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.orange),
-                          onPressed: storeBeneficiaryDetails,
-                          child: Text(
-                            'Add',
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          )),
-                    ),
-                  ),
-                ],
-              )
             ],
           ),
         ),
