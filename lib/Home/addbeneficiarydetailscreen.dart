@@ -58,7 +58,7 @@ class _AddBeneficiaryDetailsScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.blue.shade200,
       bottomNavigationBar: Row(
         children: [
           Flexible(
@@ -66,7 +66,8 @@ class _AddBeneficiaryDetailsScreenState
               height: 58,
               width: MediaQuery.of(context).size.width,
               child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.white),
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -74,7 +75,7 @@ class _AddBeneficiaryDetailsScreenState
                     'Cancel',
                     style: TextStyle(
                         fontSize: 20,
-                        color: Colors.white,
+                        color: Colors.blue.shade600,
                         fontWeight: FontWeight.bold),
                   )),
             ),
@@ -136,11 +137,11 @@ class _AddBeneficiaryDetailsScreenState
                           onPressed: () async {
                             try {
                               await authProvider.signOut();
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (context) => SignInScreen()),
-                              );
-                            } catch (e) {
-                            }
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => SignInScreen()),
+                                  (Route<dynamic> route) => false);
+                            } catch (e) {}
                           },
                           icon: Icon(Icons.power_settings_new,
                               color: Colors.white),
@@ -187,7 +188,10 @@ class _AddBeneficiaryDetailsScreenState
                           ),
                           Text(
                             widget.bankName,
-                            style: TextStyle(color: Colors.black, fontSize: 17),
+                            style: TextStyle(
+                                color: Colors.blue.shade600,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 17),
                           )
                         ],
                       ),
@@ -214,8 +218,8 @@ class _AddBeneficiaryDetailsScreenState
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: Colors
-                              .grey, // Change this color to your desired border color
+                          color: Colors.blue.shade600,
+                          // Change this color to your desired border color
                           width: 2.0, // Change the width as needed
                         ),
                       ),

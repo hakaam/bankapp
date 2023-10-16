@@ -1,8 +1,8 @@
 import 'package:bankapp/Home/home_screen.dart';
+import 'package:bankapp/Pages/Auth/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../OTP/screens/phone_number/phone_number_form.dart';
 import '../../Providers/Authprovider/auth_provider.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -57,7 +57,6 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.blue.shade200,
-
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -65,24 +64,25 @@ class _SignInScreenState extends State<SignInScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Center(
-                child:  Text(
-                  "Straton Bank",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 34),
-                ),),
+              child: Text(
+                "Straton Bank",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 34),
+              ),
+            ),
             SizedBox(
               height: 10,
             ),
             Center(
-              child:  Text(
+              child: Text(
                 "Banking Made Easy",
                 style: TextStyle(
-                    color: Colors.white,
-                    ),
-              ),),
-
+                  color: Colors.white,
+                ),
+              ),
+            ),
             SizedBox(
               height: 50,
             ),
@@ -111,7 +111,7 @@ class _SignInScreenState extends State<SignInScreen> {
             TextFormField(
               controller: passwordController,
               obscureText:
-              !passwordVisible, // Set obscureText based on passwordVisible
+                  !passwordVisible, // Set obscureText based on passwordVisible
               decoration: InputDecoration(
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -129,11 +129,11 @@ class _SignInScreenState extends State<SignInScreen> {
                 labelStyle: TextStyle(color: Colors.white, fontSize: 22),
                 focusedBorder: UnderlineInputBorder(
                   borderSide:
-                  BorderSide(color: Colors.white), // Change the color here
+                      BorderSide(color: Colors.white), // Change the color here
                 ),
                 enabledBorder: UnderlineInputBorder(
                   borderSide:
-                  BorderSide(color: Colors.white), // Change the color here
+                      BorderSide(color: Colors.white), // Change the color here
                 ),
               ),
               // onChanged: (value) {
@@ -146,7 +146,6 @@ class _SignInScreenState extends State<SignInScreen> {
             SizedBox(
               height: 40,
             ),
-
             Row(
               children: [
                 Expanded(
@@ -156,8 +155,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       height: 50.0,
                       decoration: new BoxDecoration(
                         color: Colors.blue.shade600,
-                        border:
-                        new Border.all(color: Colors.white, width: 2.0),
+                        border: new Border.all(color: Colors.white, width: 2.0),
                         borderRadius: new BorderRadius.circular(7.0),
                       ),
                       child: new Center(
@@ -178,14 +176,18 @@ class _SignInScreenState extends State<SignInScreen> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacementNamed(context, '/signup');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SignUpScreen(),
+                        ),
+                      );
                     },
                     child: Container(
                       height: 50.0,
                       decoration: new BoxDecoration(
                         color: Colors.blue.shade600,
-                        border:
-                        new Border.all(color: Colors.white, width: 2.0),
+                        border: new Border.all(color: Colors.white, width: 2.0),
                         borderRadius: new BorderRadius.circular(7.0),
                       ),
                       child: new Center(

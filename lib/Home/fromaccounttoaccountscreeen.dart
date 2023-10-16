@@ -32,7 +32,6 @@ class _FromAccountToAccountScreenState
     extends State<FromAccountToAccountScreen> {
   AuthProvider authProvider = AuthProvider();
 
-
   String? selectedOption = 'Others';
   List<String> options = [
     'Card Bill Payment',
@@ -181,7 +180,7 @@ class _FromAccountToAccountScreenState
           ),
         ),
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.blue.shade200,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -219,11 +218,11 @@ class _FromAccountToAccountScreenState
                           onPressed: () async {
                             try {
                               await authProvider.signOut();
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (context) => SignInScreen()),
-                              );
-                            } catch (e) {
-                            }
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => SignInScreen()),
+                                  (Route<dynamic> route) => false);
+                            } catch (e) {}
                           },
                           icon: Icon(Icons.power_settings_new,
                               color: Colors.white),
@@ -274,7 +273,7 @@ class _FromAccountToAccountScreenState
                               Text(
                                 userName,
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  color: Colors.blue.shade600,
                                   fontSize: 19,
                                 ),
                               ),
@@ -286,8 +285,8 @@ class _FromAccountToAccountScreenState
                                   Text(
                                     accountNumber,
                                     style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 19,
+                                      color: Colors.blue.shade600,
+                                      fontSize: 17,
                                     ),
                                   ),
                                 ],
@@ -335,7 +334,7 @@ class _FromAccountToAccountScreenState
                           Text(
                             widget.accountTitle,
                             style: TextStyle(
-                              color: Colors.black,
+                              color: Colors.blue.shade600,
                               fontSize: 19,
                             ),
                           ),

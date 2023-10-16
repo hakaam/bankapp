@@ -4,6 +4,7 @@ import 'package:bankapp/utils/common.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../Pages/Auth/signin.dart';
 import '../Providers/Authprovider/auth_provider.dart';
@@ -14,7 +15,6 @@ class TransferScreen extends StatefulWidget {
 
 class _TransferScreenState extends State<TransferScreen> {
   AuthProvider authProvider = AuthProvider();
-
 
   Future<List<Map<String, dynamic>>> fetchBeneficiaryData() async {
     try {
@@ -45,13 +45,12 @@ class _TransferScreenState extends State<TransferScreen> {
     print(Common.userBalances);
     return WillPopScope(
       onWillPop: () async {
-        print("Mann");
         print(Common.userBalances[Common.currency]);
         Navigator.pop(context, Common.userBalances[Common.currency]);
         return true;
       },
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.blue.shade200,
         body: SafeArea(
           child: Column(
             children: [
@@ -85,14 +84,14 @@ class _TransferScreenState extends State<TransferScreen> {
                       children: [
                         IconButton(
                           onPressed: () async {
-                          try {
-                            await authProvider.signOut();
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(builder: (context) => SignInScreen()),
-                            );
-                          } catch (e) {
-                          }
-                        },
+                            try {
+                              await authProvider.signOut();
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => SignInScreen()),
+                                  (Route<dynamic> route) => false);
+                            } catch (e) {}
+                          },
                           icon: Icon(Icons.power_settings_new,
                               color: Colors.white),
                         ),
@@ -112,13 +111,15 @@ class _TransferScreenState extends State<TransferScreen> {
                     decoration: InputDecoration(
                       hintText: 'Search(e.g.nick,account,title,bank)',
                       hintStyle: TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.w700),
+                          color: Colors.blue.shade600,
+                          fontWeight: FontWeight.w700),
                       border: InputBorder.none,
                       prefixIcon: Padding(
                         padding: EdgeInsets.only(
                             left: 20, right: 8), // Adjust the padding as needed
                         child: Icon(
                           Icons.search,
+                          color: Colors.blue.shade600,
                           size: 25,
                         ),
                       ),
@@ -146,15 +147,21 @@ class _TransferScreenState extends State<TransferScreen> {
                     color: Colors.transparent,
                     child: Row(
                       children: [
+                        SizedBox(
+                          width: 10,
+                        ),
                         Flexible(
                           flex: 1,
                           child: Container(
-                            child: Image.asset(
-                              'images/profile.PNG',
+                            child: FaIcon(
+                              FontAwesomeIcons.userPlus,
+                              color: Colors.white,
+                              size: 18,
                             ),
-                            // Your existing code for the image
-                            // ...
                           ),
+                        ),
+                        SizedBox(
+                          width: 10,
                         ),
                         Flexible(
                           flex: 2,
@@ -179,9 +186,9 @@ class _TransferScreenState extends State<TransferScreen> {
                 height: 4,
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 60),
+                padding: const EdgeInsets.only(left: 0),
                 child: Divider(
-                  color: Colors.grey,
+                  color: Colors.blue.shade600,
                 ),
               ),
               SizedBox(
@@ -250,6 +257,7 @@ class BeneficiaryItem extends StatelessWidget {
     required this.nickName,
     required this.documentId, // Include documentId in the constructor
   }) : super(key: key);
+
   void _deleteData(BuildContext context) {
     FirebaseFirestore.instance
         .collection("beneficiaries")
@@ -342,7 +350,7 @@ class BeneficiaryItem extends StatelessWidget {
                           onPressed: () {
                             _deleteData(context); // Pass the context here
                           },
-                          icon: Icon(Icons.delete, color: Colors.grey),
+                          icon: Icon(Icons.delete, color: Colors.white),
                         ),
                       ],
                     ),

@@ -14,6 +14,7 @@ class AddBeneficiaryAccountNumberScreen extends StatefulWidget {
     required this.bankName,
     required this.imageUrl,
   });
+
   @override
   State<AddBeneficiaryAccountNumberScreen> createState() =>
       _AddBeneficiaryAccountNumberScreenState();
@@ -77,7 +78,7 @@ class _AddBeneficiaryAccountNumberScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.blue.shade200,
       body: SafeArea(
         child: Container(
           child: Column(
@@ -116,11 +117,11 @@ class _AddBeneficiaryAccountNumberScreenState
                           onPressed: () async {
                             try {
                               await authProvider.signOut();
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (context) => SignInScreen()),
-                              );
-                            } catch (e) {
-                            }
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => SignInScreen()),
+                                  (Route<dynamic> route) => false);
+                            } catch (e) {}
                           },
                           icon: Icon(Icons.power_settings_new,
                               color: Colors.white),
@@ -177,7 +178,10 @@ class _AddBeneficiaryAccountNumberScreenState
                           ),
                           Text(
                             widget.bankName, // Use the passed bankName
-                            style: TextStyle(color: Colors.black, fontSize: 17),
+                            style: TextStyle(
+                                color: Colors.blue.shade600,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700),
                           )
                         ],
                       ),

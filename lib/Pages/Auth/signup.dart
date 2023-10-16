@@ -15,7 +15,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool hasText = false; // Initialize it in your state class
-  bool isSigningUp = false; // Add a state variable for tracking the sign-up process
+  bool isSigningUp =
+      false; // Add a state variable for tracking the sign-up process
 
   void _signUp(BuildContext context) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -32,7 +33,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         password: passwordController.text,
       );
       // Navigate to the home screen after successful signup
-      Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => HomeScreen()));
     } catch (e) {
       // Handle signup errors, show error message
       showDialog(
@@ -63,13 +65,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:Colors.blue.shade200,
-
+      backgroundColor: Colors.blue.shade200,
       appBar: AppBar(
         automaticallyImplyLeading: true,
         leading: IconButton(
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>SignInScreen()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => SignInScreen()));
           },
           icon: Icon(
             Icons.arrow_back_ios,
@@ -77,15 +79,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
             size: 24,
           ),
         ),
-        title: Text('Register',style: TextStyle(
-          letterSpacing: 2,
-          fontSize: 22,
-
-
-
-        ),),
-        backgroundColor:Colors.blue.shade600,
-
+        title: Text(
+          'Register',
+          style: TextStyle(
+            letterSpacing: 2,
+            fontSize: 22,
+          ),
+        ),
+        backgroundColor: Colors.blue.shade600,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -119,14 +120,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   style: TextStyle(color: hasText ? Colors.grey : Colors.white),
-
-
                 ),
                 SizedBox(height: 30),
                 TextFormField(
                   controller: emailController,
                   decoration: InputDecoration(
-                    hintText: 'Username',
+                    hintText: 'Email',
                     hintStyle: TextStyle(color: Colors.white, fontSize: 20),
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.white),
@@ -176,20 +175,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue.shade600,
               ),
-              onPressed: isSigningUp ? null : () => _signUp(context), // Disable the button when signing up
+              onPressed: isSigningUp ? null : () => _signUp(context),
+              // Disable the button when signing up
               child: isSigningUp
                   ? Center(
-                  child: CircularProgressIndicator(
-
-                  )) // Show the progress indicator when signing up
+                      child:
+                          CircularProgressIndicator()) // Show the progress indicator when signing up
                   : Text(
-                'Next',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+                      'Next',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
             ),
           ),
         ],

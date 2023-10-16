@@ -31,7 +31,7 @@ class _BankScreenState extends State<BankScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.blue.shade200,
       body: SafeArea(
         child: Column(
           children: [
@@ -66,14 +66,14 @@ class _BankScreenState extends State<BankScreen> {
                         onPressed: () async {
                           try {
                             await authProvider.signOut();
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(builder: (context) => SignInScreen()),
-                            );
-                          } catch (e) {
-                          }
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => SignInScreen()),
+                                (Route<dynamic> route) => false);
+                          } catch (e) {}
                         },
-                        icon: Icon(Icons.power_settings_new,
-                            color: Colors.white),
+                        icon:
+                            Icon(Icons.power_settings_new, color: Colors.white),
                       ),
                     ],
                   ),
@@ -91,7 +91,7 @@ class _BankScreenState extends State<BankScreen> {
                   decoration: InputDecoration(
                     hintText: 'Search (e.g. bank name)',
                     hintStyle: TextStyle(
-                      color: Colors.black,
+                      color: Colors.blue.shade600,
                       fontWeight: FontWeight.w700,
                     ),
                     border: InputBorder.none,
@@ -102,6 +102,7 @@ class _BankScreenState extends State<BankScreen> {
                       ),
                       child: Icon(
                         Icons.search,
+                        color: Colors.blue.shade600,
                         size: 25,
                       ),
                     ),
@@ -174,7 +175,8 @@ class _BankScreenState extends State<BankScreen> {
                         Padding(
                           padding: const EdgeInsets.only(left: 65),
                           child: Divider(
-                            color: Colors.grey,
+                            thickness: 0.7,
+                            color: Colors.blue.shade600,
                           ),
                         ),
                       ],
