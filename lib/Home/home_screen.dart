@@ -109,11 +109,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: () async {
                             try {
                               await authProvider.signOut();
-                              Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                      builder: (context) => SignInScreen()),
-                                  (Route<dynamic> route) => false);
-                            } catch (e) {}
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (context) => SignInScreen()),
+                              );
+                            } catch (e) {
+                            }
                           },
                           icon: Icon(Icons.power_settings_new,
                               color: Colors.white),
@@ -123,6 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
+
             ],
           ),
         ),
@@ -196,11 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ['PKR', 'USD', 'CAD'].map((String currency) {
                                 return DropdownMenuItem<String>(
                                   value: currency,
-                                  child: Text(
-                                    currency,
-                                    style:
-                                        TextStyle(color: Colors.blue.shade600),
-                                  ),
+                                  child: Text(currency),
                                 );
                               }).toList(),
                             ),
@@ -262,6 +259,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           builder: (context) => TransferScreen(),
                         ),
                       ).then((result) {
+                     
                         setState(() {
                           Common.userBalances[Common.currency] = result;
                         });

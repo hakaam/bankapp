@@ -145,7 +145,7 @@ class _FromToTransferPayDetailsScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue.shade200,
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: Container(
           child: Column(
@@ -183,11 +183,11 @@ class _FromToTransferPayDetailsScreenState
                           onPressed: () async {
                             try {
                               await authProvider.signOut();
-                              Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                      builder: (context) => SignInScreen()),
-                                  (Route<dynamic> route) => false);
-                            } catch (e) {}
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (context) => SignInScreen()),
+                              );
+                            } catch (e) {
+                            }
                           },
                           icon: Icon(Icons.power_settings_new,
                               color: Colors.white),
@@ -237,7 +237,7 @@ class _FromToTransferPayDetailsScreenState
                               Text(
                                 widget.fromAccountUserName,
                                 style: TextStyle(
-                                    color: Colors.blue.shade600, fontSize: 17),
+                                    color: Colors.black, fontSize: 17),
                               ),
                               SizedBox(
                                 height: 4,
@@ -245,7 +245,7 @@ class _FromToTransferPayDetailsScreenState
                               Text(
                                 widget.accountNumber,
                                 style: TextStyle(
-                                    color: Colors.blue.shade600, fontSize: 15),
+                                    color: Colors.black, fontSize: 15),
                               ),
                             ],
                           )
@@ -271,8 +271,8 @@ class _FromToTransferPayDetailsScreenState
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: Colors.blue.shade600,
-                              // Change this color to your desired border color
+                              color: Colors
+                                  .grey, // Change this color to your desired border color
                               width: 2.0, // Change the width as needed
                             ),
                           ),
@@ -295,8 +295,8 @@ class _FromToTransferPayDetailsScreenState
                                     Text(
                                       widget.accountTitle,
                                       style: TextStyle(
-                                        color: Colors.white,
-                                        // Use the specified color for the right text
+                                        color: Colors
+                                            .white, // Use the specified color for the right text
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -307,7 +307,7 @@ class _FromToTransferPayDetailsScreenState
                                   height: 11,
                                 ),
                                 Divider(
-                                  color: Colors.blue.shade600,
+                                  color: Colors.grey,
                                 ),
                                 SizedBox(
                                   height: 11,
@@ -327,8 +327,8 @@ class _FromToTransferPayDetailsScreenState
                                     Text(
                                       widget.bankName,
                                       style: TextStyle(
-                                        color: Colors.white,
-                                        // Use the specified color for the right text
+                                        color: Colors
+                                            .white, // Use the specified color for the right text
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -351,8 +351,8 @@ class _FromToTransferPayDetailsScreenState
                                     Text(
                                       'Nick',
                                       style: TextStyle(
-                                        color: Colors.white,
-                                        // Use the specified color for the left text
+                                        color: Colors
+                                            .white, // Use the specified color for the left text
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -360,8 +360,8 @@ class _FromToTransferPayDetailsScreenState
                                     Text(
                                       widget.nickName,
                                       style: TextStyle(
-                                        color: Colors.white,
-                                        // Use the specified color for the right text
+                                        color: Colors
+                                            .white, // Use the specified color for the right text
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -388,8 +388,8 @@ class _FromToTransferPayDetailsScreenState
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: Colors.blue.shade600,
-                              // Change this color to your desired border color
+                              color: Colors
+                                  .grey, // Change this color to your desired border color
                               width: 2.0, // Change the width as needed
                             ),
                           ),
@@ -404,8 +404,8 @@ class _FromToTransferPayDetailsScreenState
                                     Text(
                                       'Amount',
                                       style: TextStyle(
-                                        color: Colors.white,
-                                        // Use the specified color for the left text
+                                        color: Colors
+                                            .white, // Use the specified color for the left text
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -413,8 +413,8 @@ class _FromToTransferPayDetailsScreenState
                                     Text(
                                       widget.amount,
                                       style: TextStyle(
-                                        color: Colors.white,
-                                        // Use the specified color for the right text
+                                        color: Colors
+                                            .white, // Use the specified color for the right text
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -425,7 +425,7 @@ class _FromToTransferPayDetailsScreenState
                                   height: 11,
                                 ),
                                 Divider(
-                                  color: Colors.blue.shade600,
+                                  color: Colors.grey,
                                 ),
                                 SizedBox(
                                   height: 11,
@@ -437,8 +437,8 @@ class _FromToTransferPayDetailsScreenState
                                     Text(
                                       'Bank Charges',
                                       style: TextStyle(
-                                        color: Colors.white,
-                                        // Use the specified color for the left text
+                                        color: Colors
+                                            .white, // Use the specified color for the left text
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -446,8 +446,8 @@ class _FromToTransferPayDetailsScreenState
                                     Text(
                                       'Rs.0.00',
                                       style: TextStyle(
-                                        color: Colors.redAccent,
-                                        // Use the specified color for the right text
+                                        color: Colors
+                                            .redAccent, // Use the specified color for the right text
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -470,8 +470,8 @@ class _FromToTransferPayDetailsScreenState
                                     Text(
                                       'Total Amount',
                                       style: TextStyle(
-                                        color: Colors.white,
-                                        // Use the specified color for the left text
+                                        color: Colors
+                                            .white, // Use the specified color for the left text
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -479,8 +479,8 @@ class _FromToTransferPayDetailsScreenState
                                     Text(
                                       widget.amount,
                                       style: TextStyle(
-                                        color: Colors.white,
-                                        // Use the specified color for the right text
+                                        color: Colors
+                                            .white, // Use the specified color for the right text
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -505,13 +505,13 @@ class _FromToTransferPayDetailsScreenState
                       width: MediaQuery.of(context).size.width,
                       child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white),
+                              backgroundColor: Colors.grey),
                           onPressed: () {},
                           child: Text(
                             'Cancel',
                             style: TextStyle(
                                 fontSize: 20,
-                                color: Colors.blue.shade600,
+                                color: Colors.white,
                                 fontWeight: FontWeight.bold),
                           )),
                     ),
