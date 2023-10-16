@@ -115,32 +115,42 @@ class _FromToTransferPayDetailsScreenState
       double transactionAmount, double remainingBalance) async {
     try {
       final CollectionReference transfersCollection =
-          FirebaseFirestore.instance.collection('transaction');
+      FirebaseFirestore.instance.collection('transaction');
 
-      Map<String, dynamic> transferData = {
-        'senderTitle': widget.fromAccountUserName,
-        'receiverTitle': widget.accountTitle,
-        'bankName': widget.bankName,
-        'userAccountNumber': widget.accountNumber,
-        'receiverAccountNumber': widget.receiverAccountNumber,
-        'transactionAmount': widget.amount,
-        'remainingBalance': remainingBalance,
-        'timestamp': FieldValue.serverTimestamp(),
-      };
+      // Retrieve the current user's UID
+      User? currentUser = FirebaseAuth.instance.currentUser;
 
-      await transfersCollection.add(transferData);
+      if (currentUser != null) {
+        Map<String, dynamic> transferData = {
+          'userId': currentUser.uid, // Add the userId
+          'senderTitle': widget.fromAccountUserName,
+          'receiverTitle': widget.accountTitle,
+          'bankName': widget.bankName,
+          'userAccountNumber': widget.accountNumber,
+          'receiverAccountNumber': widget.receiverAccountNumber,
+          'transactionAmount': widget.amount,
+          'remainingBalance': remainingBalance,
+          'timestamp': FieldValue.serverTimestamp(),
+        };
 
-      showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: const Text('Payment Successful'),
-          backgroundColor: Colors.white,
-        ),
-      );
+        await transfersCollection.add(transferData);
+
+        showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Payment Successful'),
+            backgroundColor: Colors.white,
+          ),
+        );
+      } else {
+        // Handle the case where the user is not authenticated
+        print('User not authenticated');
+      }
     } catch (e) {
       print('Error saving transfer details: $e');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -184,10 +194,10 @@ class _FromToTransferPayDetailsScreenState
                             try {
                               await authProvider.signOut();
                               Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (context) => SignInScreen()),
+                                MaterialPageRoute(
+                                    builder: (context) => SignInScreen()),
                               );
-                            } catch (e) {
-                            }
+                            } catch (e) {}
                           },
                           icon: Icon(Icons.power_settings_new,
                               color: Colors.white),

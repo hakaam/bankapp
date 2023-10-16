@@ -98,7 +98,7 @@ class _StatementScreenState extends State<StatementScreen> {
                                 MaterialPageRoute(
                                   builder: (context) => SignInScreen(),
                                 ),
-                                (Route<dynamic> route) => false,
+                                    (Route<dynamic> route) => false,
                               );
                             } catch (e) {}
                           },
@@ -225,7 +225,7 @@ class _StatementScreenState extends State<StatementScreen> {
 
   String _formatTimestamp(DateTime dateTime) {
     final String formattedDate =
-        DateFormat('E, d MMM yyyy', 'en_US').format(dateTime);
+    DateFormat('E, d MMM yyyy', 'en_US').format(dateTime);
     return formattedDate;
   }
 }

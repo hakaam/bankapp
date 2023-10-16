@@ -1,3 +1,4 @@
+import 'package:bankapp/Home/hh.dart';
 import 'package:bankapp/Home/transfer_screen.dart';
 import 'package:bankapp/utils/common.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -256,14 +257,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => TransferScreen(),
+                          builder: (context) => StatementScreen(),
                         ),
-                      ).then((result) {
-                     
-                        setState(() {
-                          Common.userBalances[Common.currency] = result;
-                        });
-                      });
+                      );
                     },
                     child: Container(
                       color: Colors.transparent,
