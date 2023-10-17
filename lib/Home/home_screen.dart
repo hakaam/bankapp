@@ -1,4 +1,5 @@
 import 'package:bankapp/Home/hh.dart';
+import 'package:bankapp/Home/statement_screen.dart';
 import 'package:bankapp/Home/transfer_screen.dart';
 import 'package:bankapp/utils/common.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -38,8 +39,10 @@ class _HomeScreenState extends State<HomeScreen> {
           balances["PKR"] = balancePKR;
           balances["USD"] = balanceUSD;
           balances["CAD"] = balanceCAD;
+          print("Logged Account Number HomeScreen: ${userDoc["accountNumber"]}");
 
           setState(() {
+            Common.loggedInAccountNo = userDoc["accountNumber"];
             Common.userBalances = balances;
             Common.currency = "PKR";
           });
@@ -195,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 });
                               },
                               items:
-                                  ['PKR', 'USD', 'CAD'].map((String currency) {
+                              ['PKR', 'USD', 'CAD'].map((String currency) {
                                 return DropdownMenuItem<String>(
                                   value: currency,
                                   child: Text(currency),
