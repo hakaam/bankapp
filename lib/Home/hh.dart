@@ -1,3 +1,4 @@
+// import 'package:bankapp/utils/common.dart';
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/material.dart';
@@ -7,7 +8,7 @@
 // import '../Providers/Authprovider/auth_provider.dart';
 //
 // class StatementScreen extends StatefulWidget {
-//   const StatementScreen(String loggedInAccountNo, {Key? key});
+//   const StatementScreen({Key? key});
 //
 //   @override
 //   State<StatementScreen> createState() => _StatementScreenState();
@@ -15,6 +16,43 @@
 //
 // class _StatementScreenState extends State<StatementScreen> {
 //   AuthProvider authProvider = AuthProvider();
+//   Future<void> fetchUserBalance() async {
+//     try {
+//       final currentUser = FirebaseAuth.instance.currentUser;
+//       if (currentUser != null) {
+//         DocumentSnapshot userDoc = await FirebaseFirestore.instance
+//             .collection("users")
+//             .doc(currentUser.uid)
+//             .get();
+//         if (userDoc.exists) {
+//           var balancePKR = userDoc['balancePKR'];
+//           var balanceUSD = userDoc['balanceUSD'];
+//           var balanceCAD = userDoc['balanceCAD'];
+//
+//           Map<String, dynamic> balances = {};
+//           balances["PKR"] = balancePKR;
+//           balances["USD"] = balanceUSD;
+//           balances["CAD"] = balanceCAD;
+//           print(
+//               "Logged Account Number StatementScreen: ${userDoc["accountNumber"]}");
+//
+//           setState(() {
+//             Common.loggedInAccountNo = userDoc["accountNumber"];
+//             Common.userBalances = balances;
+//             Common.currency = "PKR";
+//           });
+//         }
+//       }
+//     } catch (e) {
+//       print("Error fetching user balance: $e");
+//     }
+//   }
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     fetchUserBalance();
+//   }
 //
 //   @override
 //   Widget build(BuildContext context) {
@@ -158,20 +196,11 @@
 //                                 SizedBox(height: 5),
 //                                 Row(
 //                                   children: [
-//                                     Text(
-//                                       '${data['senderTitle'].toString().toUpperCase()}',
-//                                       style: TextStyle(
-//                                         fontSize: 15,
-//                                         color: Colors.white,
-//                                       ),
-//                                     ),
 //                                     SizedBox(width: 5),
 //                                     Text(
 //                                       ' ${data['receiverTitle'].toString().toUpperCase()}',
 //                                       style: TextStyle(
-//                                         fontSize: 15,
-//                                         color: Colors.white,
-//                                       ),
+//                                           fontSize: 15, color: Colors.white),
 //                                     ),
 //                                     Text(
 //                                       '-',
@@ -188,19 +217,22 @@
 //                                       ),
 //                                     ),
 //                                   ],
-//                                 )
+//                                 ),
 //                               ],
 //                             ),
 //                             Text(
 //                               'Rs. ${double.parse(data['transactionAmount']).toStringAsFixed(2)}',
 //                               style: TextStyle(
 //                                 fontSize: 15,
-//                                 color: Colors.red,
+//                                 color: Common.loggedInAccountNo ==
+//                                     data['receiverAccountNumber']
+//                                     ? Colors.blue
+//                                     : Colors.red,
 //                               ),
-//                             ),
+//                             )
 //                           ],
 //                         ),
-//                       ),
+//                       )
 //                   ],
 //                 ),
 //             ],

@@ -1,6 +1,7 @@
+import 'package:bankapp/Charity/charities_screen.dart';
 import 'package:bankapp/Home/hh.dart';
-import 'package:bankapp/Home/statement_screen.dart';
-import 'package:bankapp/Home/transfer_screen.dart';
+import 'package:bankapp/Statement/statement_screen.dart';
+import 'package:bankapp/Transfer/transfer_screen.dart';
 import 'package:bankapp/utils/common.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -302,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => TransferScreen(),
+                          builder: (context) => CharityScreen(),
                         ),
                       ).then((result) {
                         setState(() {

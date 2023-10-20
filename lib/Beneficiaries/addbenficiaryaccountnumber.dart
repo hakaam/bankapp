@@ -161,12 +161,13 @@ class _AddBeneficiaryAccountNumberScreenState
                       ),
                       child: Row(
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(
-                                50), // You can adjust the radius as needed
+                          Container(
+                            clipBehavior: Clip.antiAlias,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                            ),// You can adjust the radius as needed
                             child: Image.network(
                               widget.imageUrl, // Use the passed imageUrl
-                              scale: 2,
                               width: 50, // Set your desired width
                               height: 50, // Set your desired height
                               fit: BoxFit
@@ -176,12 +177,14 @@ class _AddBeneficiaryAccountNumberScreenState
                           SizedBox(
                             width: 10,
                           ),
-                          Text(
-                            widget.bankName, // Use the passed bankName
-                            style: TextStyle(
-                                color: Colors.blue.shade600,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w700),
+                          Expanded(
+                            child: Text(
+                              widget.bankName, // Use the passed bankName
+                              style: TextStyle(
+                                  color: Colors.blue.shade600,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w700),
+                            ),
                           )
                         ],
                       ),

@@ -1,5 +1,5 @@
-import 'package:bankapp/Home/bank_screen.dart';
-import 'package:bankapp/Home/fromaccounttoaccountscreeen.dart';
+import 'package:bankapp/Bank/bank_screen.dart';
+import 'package:bankapp/Accounts/fromaccounttoaccountscreeen.dart';
 import 'package:bankapp/utils/common.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,15 +15,39 @@ class TransferScreen extends StatefulWidget {
 
 class _TransferScreenState extends State<TransferScreen> {
   AuthProvider authProvider = AuthProvider();
+  TextEditingController searchController = TextEditingController(); // Add this
+
+  List<Map<String, dynamic>> beneficiaryData = [];
+  List<Map<String, dynamic>> displayedBeneficiaries = [];
+
+
+  void filterBeneficiaries(String query) {
+    query = query.toLowerCase();
+    setState(() {
+      displayedBeneficiaries = beneficiaryData.where((beneficiary) {
+        String nickName = beneficiary['nickName'].toLowerCase();
+        String accountTitle = beneficiary['accountTitle'].toLowerCase();
+        String bankName = beneficiary['bankName'].toLowerCase();
+        String receiverAccountNumber =
+        beneficiary['receiverAccountNumber'].toLowerCase();
+
+        return nickName.contains(query) ||
+            accountTitle.contains(query) ||
+            bankName.contains(query) ||
+            receiverAccountNumber.contains(query);
+      }).toList();
+    });
+  }
+
 
   Future<List<Map<String, dynamic>>> fetchBeneficiaryData() async {
     try {
       final userId = FirebaseAuth.instance.currentUser!.uid;
       final beneficiaryRef =
-          FirebaseFirestore.instance.collection("beneficiaries");
+      FirebaseFirestore.instance.collection("beneficiaries");
 
       final querySnapshot =
-          await beneficiaryRef.where('userId', isEqualTo: userId).get();
+      await beneficiaryRef.where('userId', isEqualTo: userId).get();
 
       final beneficiaryData = querySnapshot.docs.map((doc) {
         final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
@@ -31,18 +55,23 @@ class _TransferScreenState extends State<TransferScreen> {
         return data;
       }).toList();
 
-      print("Beneficiary Data:");
-      print(beneficiaryData);
       return beneficiaryData;
     } catch (e) {
       print("Error fetching beneficiary data: $e");
       return [];
     }
   }
-
+  @override
+  void initState() {
+    super.initState();
+    fetchBeneficiaryData().then((data) {
+      setState(() {
+        displayedBeneficiaries = data;
+      });
+    });
+  }
   @override
   Widget build(BuildContext context) {
-    print(Common.userBalances);
     return WillPopScope(
       onWillPop: () async {
         print(Common.userBalances[Common.currency]);
@@ -89,7 +118,7 @@ class _TransferScreenState extends State<TransferScreen> {
                               Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(
                                       builder: (context) => SignInScreen()),
-                                  (Route<dynamic> route) => false);
+                                      (Route<dynamic> route) => false);
                             } catch (e) {}
                           },
                           icon: Icon(Icons.power_settings_new,
@@ -108,6 +137,9 @@ class _TransferScreenState extends State<TransferScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
+                    controller: searchController, // Use the search controller
+                    onChanged: filterBeneficiaries,
+
                     decoration: InputDecoration(
                       hintText: 'Search(e.g.nick,account,title,bank)',
                       hintStyle: TextStyle(
@@ -210,12 +242,12 @@ class _TransferScreenState extends State<TransferScreen> {
                             BeneficiaryItem(
                               bankName: data['bankName'],
                               receiverAccountNumber:
-                                  data['receiverAccountNumber'],
+                              data['receiverAccountNumber'],
                               imagePath: data['imageUrl'],
                               accountTitle: data['userName'],
                               nickName: data['nickName'],
                               documentId: data[
-                                  'documentId'], // Pass the documentId here
+                              'documentId'], // Pass the documentId here
                             ),
                         ],
                       );
@@ -262,7 +294,7 @@ class BeneficiaryItem extends StatelessWidget {
     FirebaseFirestore.instance
         .collection("beneficiaries")
         .doc(
-            documentId) // Use the provided documentId to target the specific document
+        documentId) // Use the provided documentId to target the specific document
         .get()
         .then((docSnapshot) {
       if (docSnapshot.exists) {
@@ -323,8 +355,15 @@ class BeneficiaryItem extends StatelessWidget {
             Flexible(
               flex: 1,
               child: Container(
+                clipBehavior: Clip.antiAlias,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                ),
                 child: Image.network(
                   imagePath,
+                  height: 50,
+                  width: 50,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),

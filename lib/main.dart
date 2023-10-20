@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'OTP/screens/OTP/otp_screen.dart';
-import 'OTP/services/auth_repo.dart';
-import 'OTP/services/auth_repo_impl.dart';
 import 'Pages/Auth/signin.dart';
 import 'Pages/Auth/signup.dart';
 import 'Providers/Authprovider/auth_provider.dart';
@@ -20,10 +18,7 @@ void main() async {
         ChangeNotifierProvider<AuthProvider>(
           create: (context) => AuthProvider(),
         ),
-        Provider<AuthRepo>(
-          create: (context) =>
-              AuthRepoImp(), // Provide an instance of AuthRepoImp.
-        ),
+
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -32,7 +27,6 @@ void main() async {
           '/': (context) => SignInScreen(),
           '/signup': (context) => SignUpScreen(),
           '/forgot_password': (context) => ForgotPasswordScreen(),
-          '/otp': (context) => OtpScreen(),
         },
       ),
     ),

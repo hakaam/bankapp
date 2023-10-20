@@ -6,36 +6,30 @@ import 'package:flutter/material.dart';
 import '../Pages/Auth/signin.dart';
 import '../Providers/Authprovider/auth_provider.dart';
 
-class FromToTransferPayDetailsScreen extends StatefulWidget {
+class FromToTransferPayDetailsCharitiesScreen extends StatefulWidget {
   final String fromAccountUserName;
-  final String accountTitle;
-  final String bankName;
-  final String imagePath;
+  final String charityName;
+  final String charityImgUrl;
   final String accountNumber;
-  final String receiverAccountNumber;
-  final String nickName;
   final String amount;
   final double userBalance;
 
-  FromToTransferPayDetailsScreen({
+  FromToTransferPayDetailsCharitiesScreen({
     required this.fromAccountUserName,
-    required this.accountTitle,
-    required this.bankName,
-    required this.imagePath,
+    required this.charityName,
+    required this.charityImgUrl,
     required this.accountNumber,
-    required this.nickName,
     required this.amount,
-    required this.receiverAccountNumber,
     required this.userBalance,
   });
 
   @override
-  State<FromToTransferPayDetailsScreen> createState() =>
-      _FromToTransferPayDetailsScreenState();
+  State<FromToTransferPayDetailsCharitiesScreen> createState() =>
+      _FromToTransferPayDetailsCharitiesScreenState();
 }
 
-class _FromToTransferPayDetailsScreenState
-    extends State<FromToTransferPayDetailsScreen> {
+class _FromToTransferPayDetailsCharitiesScreenState
+    extends State<FromToTransferPayDetailsCharitiesScreen> {
   AuthProvider authProvider = AuthProvider();
 
   late double userBalance;
@@ -46,49 +40,49 @@ class _FromToTransferPayDetailsScreenState
     userBalance = widget.userBalance;
   }
 
-  Future<double> getReceiverBalanceFromFirestore() async {
-    // Replace this with code to fetch the receiver's balance from Firestore
-    try {
-      QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await FirebaseFirestore.instance.collection('users').get();
+  // Future<double> getReceiverBalanceFromFirestore() async {
+  //   // Replace this with code to fetch the receiver's balance from Firestore
+  //   try {
+  //     QuerySnapshot<Map<String, dynamic>> querySnapshot =
+  //     await FirebaseFirestore.instance.collection('users').get();
+  //
+  //     for (QueryDocumentSnapshot<Map<String, dynamic>> docSnapshot
+  //     in querySnapshot.docs) {
+  //       Map<String, dynamic> data = docSnapshot.data();
+  //       print("data: $data");
+  //       if (data.containsKey('accountNumber') &&
+  //           data['accountNumber'] == widget.receiverAccountNumber) {
+  //         return data['balance${Common.currency}'];
+  //       }
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching receiver balance: $e');
+  //   }
+  //   return -1;
+  // }
 
-      for (QueryDocumentSnapshot<Map<String, dynamic>> docSnapshot
-          in querySnapshot.docs) {
-        Map<String, dynamic> data = docSnapshot.data();
-        print("data: $data");
-        if (data.containsKey('accountNumber') &&
-            data['accountNumber'] == widget.receiverAccountNumber) {
-          return data['balance${Common.currency}'];
-        }
-      }
-    } catch (e) {
-      print('Error fetching receiver balance: $e');
-    }
-    return -1;
-  }
-
-  void updateReceiverBalanceInFirestore(double newBalance) async {
-    // Replace this with code to update the receiver's balance in Firestore
-
-    try {
-      QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await FirebaseFirestore.instance.collection('users').get();
-
-      for (QueryDocumentSnapshot<Map<String, dynamic>> docSnapshot
-          in querySnapshot.docs) {
-        Map<String, dynamic> data = docSnapshot.data();
-        if (data.containsKey('accountNumber') &&
-            data['accountNumber'] == widget.receiverAccountNumber) {
-          DocumentReference docRef = FirebaseFirestore.instance
-              .collection('users')
-              .doc(docSnapshot.id);
-          await docRef.update({'balance${Common.currency}': newBalance});
-        }
-      }
-    } catch (e) {
-      print('Error fetching receiver balance: $e');
-    }
-  }
+  // void updateReceiverBalanceInFirestore(double newBalance) async {
+  //   // Replace this with code to update the receiver's balance in Firestore
+  //
+  //   try {
+  //     QuerySnapshot<Map<String, dynamic>> querySnapshot =
+  //     await FirebaseFirestore.instance.collection('users').get();
+  //
+  //     for (QueryDocumentSnapshot<Map<String, dynamic>> docSnapshot
+  //     in querySnapshot.docs) {
+  //       Map<String, dynamic> data = docSnapshot.data();
+  //       if (data.containsKey('accountNumber') &&
+  //           data['accountNumber'] == widget.receiverAccountNumber) {
+  //         DocumentReference docRef = FirebaseFirestore.instance
+  //             .collection('users')
+  //             .doc(docSnapshot.id);
+  //         await docRef.update({'balance${Common.currency}': newBalance});
+  //       }
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching receiver balance: $e');
+  //   }
+  // }
 
   void deductAmountFromBalance(double amount) {
     userBalance -= amount;
@@ -115,7 +109,7 @@ class _FromToTransferPayDetailsScreenState
       double transactionAmount, double remainingBalance) async {
     try {
       final CollectionReference transfersCollection =
-      FirebaseFirestore.instance.collection('transaction');
+          FirebaseFirestore.instance.collection('charitytransactions');
 
       // Retrieve the current user's UID
       User? currentUser = FirebaseAuth.instance.currentUser;
@@ -124,12 +118,10 @@ class _FromToTransferPayDetailsScreenState
         Map<String, dynamic> transferData = {
           'userId': currentUser.uid, // Add the userId
           'senderTitle': widget.fromAccountUserName,
-          'receiverTitle': widget.accountTitle,
-          'bankName': widget.bankName,
           'userAccountNumber': widget.accountNumber,
-          'receiverAccountNumber': widget.receiverAccountNumber,
           'transactionAmount': widget.amount,
           'remainingBalance': remainingBalance,
+          'charityName': widget.charityName,
           'timestamp': FieldValue.serverTimestamp(),
         };
 
@@ -151,11 +143,10 @@ class _FromToTransferPayDetailsScreenState
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.blue.shade200,
       body: SafeArea(
         child: Container(
           child: Column(
@@ -234,7 +225,7 @@ class _FromToTransferPayDetailsScreenState
                       child: Row(
                         children: [
                           Image.network(
-                            widget.imagePath,
+                            'https://ebanking.meezanbank.com/AmbitRetailFrontEnd/images/new-login-logo.png',
                             scale: 3.5,
                           ),
                           SizedBox(
@@ -276,13 +267,13 @@ class _FromToTransferPayDetailsScreenState
                           height: 10,
                         ),
                         Container(
-                          height: 180,
+                          height: 70,
                           width: MediaQuery.of(context).size.width,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
                               color: Colors
-                                  .grey, // Change this color to your desired border color
+                                  .black45, // Change this color to your desired border color
                               width: 2.0, // Change the width as needed
                             ),
                           ),
@@ -295,89 +286,27 @@ class _FromToTransferPayDetailsScreenState
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      'AccountTitle',
+                                      'Charity Name',
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
                                     ),
-                                    Text(
-                                      widget.accountTitle,
-                                      style: TextStyle(
-                                        color: Colors
-                                            .white, // Use the specified color for the right text
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
+                                    SizedBox(width: 20,),
+                                    Expanded(
+                                      child: Text(
+                                        widget.charityName,
+                                        style: TextStyle(
+                                          color: Colors
+                                              .white, // Use the specified color for the right text
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15,
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                                SizedBox(
-                                  height: 11,
-                                ),
-                                Divider(
-                                  color: Colors.grey,
-                                ),
-                                SizedBox(
-                                  height: 11,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Bank Name',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                    Text(
-                                      widget.bankName,
-                                      style: TextStyle(
-                                        color: Colors
-                                            .white, // Use the specified color for the right text
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 11,
-                                ),
-                                Divider(
-                                  color: Colors.grey,
-                                ),
-                                SizedBox(
-                                  height: 11,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Nick',
-                                      style: TextStyle(
-                                        color: Colors
-                                            .white, // Use the specified color for the left text
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                    Text(
-                                      widget.nickName,
-                                      style: TextStyle(
-                                        color: Colors
-                                            .white, // Use the specified color for the right text
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ],
-                                )
                               ],
                             ),
                           ),
@@ -399,7 +328,7 @@ class _FromToTransferPayDetailsScreenState
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
                               color: Colors
-                                  .grey, // Change this color to your desired border color
+                                  .black45, // Change this color to your desired border color
                               width: 2.0, // Change the width as needed
                             ),
                           ),
@@ -544,13 +473,13 @@ class _FromToTransferPayDetailsScreenState
                                 widget.userBalance - amountToTransfer);
 
                             double receiverBalance =
-                                await getReceiverBalanceFromFirestore();
-                            receiverBalance += amountToTransfer;
+                                // await getReceiverBalanceFromFirestore();
+                                // receiverBalance += amountToTransfer;
 
-                            updateReceiverBalanceInFirestore(receiverBalance);
+                                // updateReceiverBalanceInFirestore(receiverBalance);
 
-                            Common.userBalances[Common.currency] =
-                                widget.userBalance - amountToTransfer;
+                                Common.userBalances[Common.currency] =
+                                    widget.userBalance - amountToTransfer;
 
                             Navigator.pop(context);
                             Navigator.pop(context);

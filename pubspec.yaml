@@ -43,7 +43,7 @@ dependencies:
   firebase_storage: ^11.2.7
   font_awesome_flutter: ^10.5.0
   intl: ^0.18.1
-
+  shimmer: ^3.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
