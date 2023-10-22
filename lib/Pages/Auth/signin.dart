@@ -20,7 +20,7 @@ class _SignInScreenState extends State<SignInScreen> {
   void _signIn(BuildContext context) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    emailController.text = "ali@gmail.com";
+    emailController.text = "super@gmail.com";
     passwordController.text = "123456";
 
     try {

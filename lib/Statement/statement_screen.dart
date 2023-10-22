@@ -19,6 +19,7 @@ class _StatementScreenState extends State<StatementScreen> {
   AuthProvider authProvider = AuthProvider();
   List<Map<String, dynamic>> combinedTransactions = [];
   DateTime? currentDate;
+  bool isLoading = false;
 
   Future<void> fetchUserBalance() async {
     try {
@@ -60,44 +61,54 @@ class _StatementScreenState extends State<StatementScreen> {
   }
 
   Future<void> fetchCombinedTransactions() async {
-    final regularTransactions = await FirebaseFirestore.instance
-        .collection('transaction')
-        .where('userId', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
-        .get();
-
-    final charityTransactions = await FirebaseFirestore.instance
-        .collection('charitytransactions')
-        .get();
-
-    final List<Map<String, dynamic>> regularTransactionList =
-    regularTransactions.docs.map((transactionDoc) {
-      final transaction = transactionDoc.data() as Map<String, dynamic>;
-      transaction['isCharity'] =
-      false;
-      return transaction;
-    }).toList();
-
-    final List<Map<String, dynamic>> charityTransactionList =
-    charityTransactions.docs.map((charityDoc) {
-      final charityTransaction = charityDoc.data() as Map<String, dynamic>;
-      charityTransaction['isCharity'] =
-      true;
-      return charityTransaction;
-    }).toList();
-
-    combinedTransactions = [
-      ...regularTransactionList,
-      ...charityTransactionList
-    ];
-
-    // Sort the combined transactions by timestamp in descending order
-    combinedTransactions.sort((a, b) {
-      final timestampA = (a['timestamp'] as Timestamp).toDate();
-      final timestampB = (b['timestamp'] as Timestamp).toDate();
-      return timestampB.compareTo(timestampA);
+    setState(() {
+      isLoading = true;
     });
+    try {
+      final regularTransactions = await FirebaseFirestore.instance
+          .collection('transaction')
+          .where('userId', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
+          .get();
 
-    setState(() {});
+      final charityTransactions = await FirebaseFirestore.instance
+          .collection('charitytransactions')
+          .where('userId', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
+          .get();
+
+      final List<Map<String, dynamic>> regularTransactionList =
+          regularTransactions.docs.map((transactionDoc) {
+        final transaction = transactionDoc.data() as Map<String, dynamic>;
+        transaction['isCharity'] = false;
+        return transaction;
+      }).toList();
+
+      final List<Map<String, dynamic>> charityTransactionList =
+          charityTransactions.docs.map((charityDoc) {
+        final charityTransaction = charityDoc.data() as Map<String, dynamic>;
+        charityTransaction['isCharity'] = true;
+        return charityTransaction;
+      }).toList();
+
+      combinedTransactions = [
+        ...regularTransactionList,
+        ...charityTransactionList
+      ];
+
+      // Sort the combined transactions by timestamp in descending order
+      combinedTransactions.sort((a, b) {
+        final timestampA = (a['timestamp'] as Timestamp).toDate();
+        final timestampB = (b['timestamp'] as Timestamp).toDate();
+        return timestampB.compareTo(timestampA);
+      });
+
+      setState(() {
+        isLoading = false;
+      });
+
+      setState(() {});
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -145,7 +156,7 @@ class _StatementScreenState extends State<StatementScreen> {
                               MaterialPageRoute(
                                 builder: (context) => SignInScreen(),
                               ),
-                                  (Route<dynamic> route) => false,
+                              (Route<dynamic> route) => false,
                             );
                           } catch (e) {}
                         },
@@ -159,7 +170,9 @@ class _StatementScreenState extends State<StatementScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 20,),
+            SizedBox(
+              height: 20,
+            ),
 
             // Transaction List
             Expanded(
@@ -176,11 +189,12 @@ class _StatementScreenState extends State<StatementScreen> {
   }
 
   List<Widget> _buildTransactionList() {
-    if (combinedTransactions.isEmpty) {
+    if (isLoading) {
       return [
         Center(
           child: Shimmer.fromColors(
-            baseColor: Colors.grey.shade300,  // You can choose the colors you prefer
+            baseColor: Colors.grey.shade300,
+            // You can choose the colors you prefer
             highlightColor: Colors.grey.shade100,
             child: Container(
               alignment: Alignment.topCenter,
@@ -191,6 +205,16 @@ class _StatementScreenState extends State<StatementScreen> {
             ),
           ),
         ),
+      ];
+    }
+
+    if (!isLoading && combinedTransactions.isEmpty) {
+      return [
+        Text(
+          "No Transaction Yet!",
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.w700, fontSize: 25),
+        )
       ];
     }
 
@@ -205,7 +229,6 @@ class _StatementScreenState extends State<StatementScreen> {
             color: Colors.white,
             elevation: 2,
             child: Container(
-
               height: 40,
               width: MediaQuery.of(context).size.width,
               child: Padding(
@@ -238,7 +261,7 @@ class _StatementScreenState extends State<StatementScreen> {
 
   String _formatTimestamp(DateTime dateTime) {
     final String formattedDate =
-    DateFormat('E, d MMM yyyy', 'en_US').format(dateTime);
+        DateFormat('E, d MMM yyyy', 'en_US').format(dateTime);
     return formattedDate;
   }
 
@@ -279,8 +302,8 @@ class _StatementScreenState extends State<StatementScreen> {
               color: data['isCharity']
                   ? Colors.red
                   : (Common.loggedInAccountNo == data['receiverAccountNumber']
-                  ? Colors.blue
-                  : Colors.red),
+                      ? Colors.blue
+                      : Colors.red),
             ),
           ),
         ],

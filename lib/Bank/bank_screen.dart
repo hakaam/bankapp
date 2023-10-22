@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
+import '../Beneficiaries/addbenficiaryaccountnumber.dart';
 import '../Pages/Auth/signin.dart';
 import '../Providers/Authprovider/auth_provider.dart';
-import '../Beneficiaries/addbenficiaryaccountnumber.dart';
 
 class BankScreen extends StatefulWidget {
   @override
@@ -30,11 +30,10 @@ class _BankScreenState extends State<BankScreen> {
   }
 
   void filterBanks(String query) {
-    // Filter banks based on query
     setState(() {
       filteredBanks = banks
-          .where((bank) =>
-          bank.name.toLowerCase().contains(query.toLowerCase()))
+          .where(
+              (bank) => bank.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -59,7 +58,8 @@ class _BankScreenState extends State<BankScreen> {
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                          icon: Icon(Icons.arrow_back_ios_new,
+                              color: Colors.white),
                         ),
                         Text(
                           'Send Money',
@@ -81,11 +81,12 @@ class _BankScreenState extends State<BankScreen> {
                                 MaterialPageRoute(
                                   builder: (context) => SignInScreen(),
                                 ),
-                                    (Route<dynamic> route) => false,
+                                (Route<dynamic> route) => false,
                               );
                             } catch (e) {}
                           },
-                          icon: Icon(Icons.power_settings_new, color: Colors.white),
+                          icon: Icon(Icons.power_settings_new,
+                              color: Colors.white),
                         ),
                       ],
                     ),
@@ -120,6 +121,7 @@ class _BankScreenState extends State<BankScreen> {
                       ),
                     ),
                     onChanged: (query) {
+                      print("query: $query");
                       filterBanks(query);
                     },
                   ),
@@ -140,7 +142,8 @@ class _BankScreenState extends State<BankScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => AddBeneficiaryAccountNumberScreen(
+                            builder: (context) =>
+                                AddBeneficiaryAccountNumberScreen(
                               bankName: bank.name,
                               imageUrl: bank.image,
                             ),
@@ -171,7 +174,8 @@ class _BankScreenState extends State<BankScreen> {
                                 flex: 7,
                                 child: Container(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
@@ -221,7 +225,8 @@ class Bank {
 
 Future<List<Bank>> fetchBanks() async {
   try {
-    final querySnapshot = await FirebaseFirestore.instance.collection('banks').get();
+    final querySnapshot =
+        await FirebaseFirestore.instance.collection('banks').get();
     final banks = querySnapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
       return Bank(

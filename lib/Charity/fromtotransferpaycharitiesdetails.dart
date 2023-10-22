@@ -127,13 +127,13 @@ class _FromToTransferPayDetailsCharitiesScreenState
 
         await transfersCollection.add(transferData);
 
-        showDialog<String>(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-            title: const Text('Payment Successful'),
-            backgroundColor: Colors.white,
-          ),
-        );
+        // showDialog<String>(
+        //   context: context,
+        //   builder: (BuildContext context) => AlertDialog(
+        //     title: const Text('Payment Successful'),
+        //     backgroundColor: Colors.white,
+        //   ),
+        // );
       } else {
         // Handle the case where the user is not authenticated
         print('User not authenticated');
@@ -267,13 +267,12 @@ class _FromToTransferPayDetailsCharitiesScreenState
                           height: 10,
                         ),
                         Container(
-                          height: 70,
                           width: MediaQuery.of(context).size.width,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: Colors
-                                  .black45, // Change this color to your desired border color
+                              color: Colors.blue.shade600,
+                              // Change this color to your desired border color
                               width: 2.0, // Change the width as needed
                             ),
                           ),
@@ -293,13 +292,15 @@ class _FromToTransferPayDetailsCharitiesScreenState
                                         fontSize: 15,
                                       ),
                                     ),
-                                    SizedBox(width: 20,),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
                                     Expanded(
                                       child: Text(
                                         widget.charityName,
                                         style: TextStyle(
-                                          color: Colors
-                                              .white, // Use the specified color for the right text
+                                          color: Colors.white,
+                                          // Use the specified color for the right text
                                           fontWeight: FontWeight.bold,
                                           fontSize: 15,
                                         ),
@@ -327,8 +328,8 @@ class _FromToTransferPayDetailsCharitiesScreenState
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: Colors
-                                  .black45, // Change this color to your desired border color
+                              color: Colors.blue.shade600,
+                              // Change this color to your desired border color
                               width: 2.0, // Change the width as needed
                             ),
                           ),
@@ -343,8 +344,8 @@ class _FromToTransferPayDetailsCharitiesScreenState
                                     Text(
                                       'Amount',
                                       style: TextStyle(
-                                        color: Colors
-                                            .white, // Use the specified color for the left text
+                                        color: Colors.white,
+                                        // Use the specified color for the left text
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -352,8 +353,8 @@ class _FromToTransferPayDetailsCharitiesScreenState
                                     Text(
                                       widget.amount,
                                       style: TextStyle(
-                                        color: Colors
-                                            .white, // Use the specified color for the right text
+                                        color: Colors.white,
+                                        // Use the specified color for the right text
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -376,8 +377,8 @@ class _FromToTransferPayDetailsCharitiesScreenState
                                     Text(
                                       'Bank Charges',
                                       style: TextStyle(
-                                        color: Colors
-                                            .white, // Use the specified color for the left text
+                                        color: Colors.white,
+                                        // Use the specified color for the left text
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -385,8 +386,8 @@ class _FromToTransferPayDetailsCharitiesScreenState
                                     Text(
                                       'Rs.0.00',
                                       style: TextStyle(
-                                        color: Colors
-                                            .redAccent, // Use the specified color for the right text
+                                        color: Colors.redAccent,
+                                        // Use the specified color for the right text
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -409,8 +410,8 @@ class _FromToTransferPayDetailsCharitiesScreenState
                                     Text(
                                       'Total Amount',
                                       style: TextStyle(
-                                        color: Colors
-                                            .white, // Use the specified color for the left text
+                                        color: Colors.white,
+                                        // Use the specified color for the left text
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -418,8 +419,8 @@ class _FromToTransferPayDetailsCharitiesScreenState
                                     Text(
                                       widget.amount,
                                       style: TextStyle(
-                                        color: Colors
-                                            .white, // Use the specified color for the right text
+                                        color: Colors.white,
+                                        // Use the specified color for the right text
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -444,13 +445,13 @@ class _FromToTransferPayDetailsCharitiesScreenState
                       width: MediaQuery.of(context).size.width,
                       child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey),
+                              backgroundColor: Colors.white),
                           onPressed: () {},
                           child: Text(
                             'Cancel',
                             style: TextStyle(
                                 fontSize: 20,
-                                color: Colors.white,
+                                color: Colors.blue.shade600,
                                 fontWeight: FontWeight.bold),
                           )),
                     ),
@@ -481,8 +482,24 @@ class _FromToTransferPayDetailsCharitiesScreenState
                                 Common.userBalances[Common.currency] =
                                     widget.userBalance - amountToTransfer;
 
-                            Navigator.pop(context);
-                            Navigator.pop(context);
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Transaction Successful'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                           } else {
                             showDialog(
                               context: context,

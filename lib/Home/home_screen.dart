@@ -1,14 +1,13 @@
-import 'package:bankapp/Charity/charities_screen.dart';
-import 'package:bankapp/Home/hh.dart';
-import 'package:bankapp/Statement/statement_screen.dart';
-import 'package:bankapp/Transfer/transfer_screen.dart';
 import 'package:bankapp/utils/common.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../Charity/charities_screen.dart';
 import '../Pages/Auth/signin.dart';
 import '../Providers/Authprovider/auth_provider.dart';
+import '../Statement/statement_screen.dart';
+import '../Transfer/transfer_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -40,7 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
           balances["PKR"] = balancePKR;
           balances["USD"] = balanceUSD;
           balances["CAD"] = balanceCAD;
-          print("Logged Account Number HomeScreen: ${userDoc["accountNumber"]}");
+          print(
+              "Logged Account Number HomeScreen: ${userDoc["accountNumber"]}");
 
           setState(() {
             Common.loggedInAccountNo = userDoc["accountNumber"];
@@ -115,10 +115,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             try {
                               await authProvider.signOut();
                               Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (context) => SignInScreen()),
+                                MaterialPageRoute(
+                                    builder: (context) => SignInScreen()),
                               );
-                            } catch (e) {
-                            }
+                            } catch (e) {}
                           },
                           icon: Icon(Icons.power_settings_new,
                               color: Colors.white),
@@ -128,7 +128,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-
             ],
           ),
         ),
@@ -199,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 });
                               },
                               items:
-                              ['PKR', 'USD', 'CAD'].map((String currency) {
+                                  ['PKR', 'USD', 'CAD'].map((String currency) {
                                 return DropdownMenuItem<String>(
                                   value: currency,
                                   child: Text(currency),
@@ -261,8 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => StatementScreen(),
-                        ),
+                            builder: (context) => StatementScreen()),
                       );
                     },
                     child: Container(
